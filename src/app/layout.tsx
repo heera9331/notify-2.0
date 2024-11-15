@@ -1,4 +1,3 @@
-
 import {
   Sidebar,
   SidebarContent,
@@ -12,7 +11,7 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar";
 import type { Metadata } from "next";
-import "../globals.css";
+import "./globals.css";
 import {
   Home,
   Inbox,
@@ -28,75 +27,64 @@ import {
   CollapsibleTrigger,
   CollapsibleContent,
 } from "@radix-ui/react-collapsible";
+import Main from "@/components/main";
 
 export const metadata: Metadata = {
-  title: "Notify Next App",
+  title: "Notify Home",
   description: "Designed and developed by Heera Singh",
 };
+
+// Menu items.
+const items = [
+  { title: "Home", url: "/home", icon: Home },
+  { title: "Tasks", url: "/tasks", icon: Inbox },
+  { title: "Notes", url: "/notes", icon: Notebook },
+  { title: "Calendar", url: "#", icon: Calendar },
+  { title: "Search", url: "#", icon: Search },
+  { title: "Settings", url: "#", icon: Settings },
+  { title: "Logout", url: "/", icon: Settings },
+];
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Menu items.
-  const items = [
-    {
-      title: "Home",
-      url: "#",
-      icon: Home,
-    },
-    {
-      title: "Inbox",
-      url: "#",
-      icon: Inbox,
-    },
-    {
-      title: "Calendar",
-      url: "#",
-      icon: Calendar,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: Search,
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings,
-    },
-  ];
   return (
     <html lang="en">
-      <body className={``}>
+      <body>
         <SidebarProvider>
-          <Sidebar>
+          <Sidebar className="border-none w-64  bg-gray-50 rounded-xl min-h-fit-content p-4 shadow-lg transition-all delay-200">
             <SidebarContent>
+              {/* Application Group */}
               <SidebarGroup>
                 <SidebarGroupLabel>Application</SidebarGroupLabel>
                 <SidebarGroupAction>
                   <Plus /> <span className="sr-only">Add Project</span>
                 </SidebarGroupAction>
-                <SidebarGroupContent></SidebarGroupContent>
+                <SidebarGroupContent />
               </SidebarGroup>
+
+              {/* Collapsible Group */}
               <Collapsible defaultOpen className="group/collapsible">
                 <SidebarGroup>
                   <SidebarGroupLabel asChild>
-                    <CollapsibleTrigger className="flex gap-2">
+                    <CollapsibleTrigger className="flex items-center gap-2 cursor-pointer">
                       <Notebook />
                       New List
                       <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
                     </CollapsibleTrigger>
                   </SidebarGroupLabel>
                   <CollapsibleContent>
-                    <SidebarGroupContent />
-                    <SidebarMenu className="transition-all delay-150">
+                    <SidebarMenu className="mt-2 space-y-2">
                       {items.map((item) => (
                         <SidebarMenuItem key={item.title}>
                           <SidebarMenuButton asChild>
-                            <a href={item.url}>
-                              <item.icon />
+                            <a
+                              href={item.url}
+                              className="flex items-center gap-2 text-gray-700 hover:text-blue-500"
+                            >
+                              <item.icon className="w-5 h-5" />
                               <span>{item.title}</span>
                             </a>
                           </SidebarMenuButton>
@@ -109,7 +97,10 @@ export default function RootLayout({
             </SidebarContent>
           </Sidebar>
         </SidebarProvider>
-        {children}
+        <Main>{children}</Main>
+        <footer className="text-center text-gray-500">
+          This is the layout page after the children
+        </footer>
       </body>
     </html>
   );
