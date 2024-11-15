@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-const SECRET_KEY = process.env.JWT_SECRET_KEY;
+const SECRET_KEY = process.env.JWT_SECRET_KEY || "";
 
 const POST = async (req: NextRequest) => {
   try {
@@ -42,6 +42,7 @@ const POST = async (req: NextRequest) => {
     );
 
     // Remove the password from the user object before sending response
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userWithoutPassword } = user;
 
     // Return success response with token and user details
