@@ -1,11 +1,14 @@
 import { useState } from "react";
+import MarkdownEditor from "react-markdown-editor-lite";
+import ReactMarkdown from "react-markdown";
+import "react-markdown-editor-lite/lib/index.css";
 
 const CreatePostForm = () => {
   const [post, setPost] = useState({
     title: "",
     content: "",
     postType: "POST", // Default to POST
-    userId: "", // This should be dynamically set based on the logged-in user
+    userId: 4, // This should be dynamically set based on the logged-in user
   });
 
   const [loading, setLoading] = useState(false);
@@ -13,11 +16,14 @@ const CreatePostForm = () => {
   const [success, setSuccess] = useState<string | null>(null);
 
   const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setPost({ ...post, [e.target.name]: e.target.value });
+  };
+
+  // Handle Markdown editor change
+  const handleEditorChange = ({ text }: { text: string }) => {
+    setPost({ ...post, content: text });
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -41,8 +47,8 @@ const CreatePostForm = () => {
         setPost({
           title: "",
           content: "",
-          postType: "POST",
-          userId: "", // Reset userId if necessary
+          postType: "TASK",
+          userId: 4, // Reset userId if necessary
         });
         console.log("Created Post:", data);
       } else {
@@ -60,7 +66,7 @@ const CreatePostForm = () => {
   return (
     <form
       onSubmit={handleFormSubmit}
-      className="w-[400px] bg-gray-50 rounded-xl min-h-fit-content p-8 shadow-lg transition-all delay-200"
+      className="w-1/2 ml-0 bg-white min-h-fit-content p-4 rounded shadow hover:shadow-lg delay-200"
     >
       <div>
         <label htmlFor="title" className="block mb-1">
@@ -77,23 +83,20 @@ const CreatePostForm = () => {
           required
         />
       </div>
+
       <div>
         <label htmlFor="content" className="block mb-1">
-          Content
+          Content (Markdown)
         </label>
-        <textarea
-          id="content"
-          name="content"
+        <MarkdownEditor
           value={post.content}
-          onChange={handleInputChange}
-          placeholder="Enter the content"
-          className="w-full border rounded p-2"
-          rows={4}
-          required
+          style={{ height: "300px" }}
+          renderHTML={(text) => <ReactMarkdown>{text}</ReactMarkdown>}
+          onChange={handleEditorChange}
         />
       </div>
 
-      <label htmlFor="postType" className="block mb-1">
+      <label htmlFor="postType" className="block mb-1 mt-4">
         Post Type
       </label>
       <select
@@ -105,8 +108,9 @@ const CreatePostForm = () => {
       >
         <option value="POST">Post</option>
         <option value="NOTE">Note</option>
-        <option value="Task">Task</option>
+        <option value="TASK">Task</option>
       </select>
+
       <div>
         <label htmlFor="userId" className="block mb-1">
           User ID

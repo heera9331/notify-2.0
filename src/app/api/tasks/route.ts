@@ -19,4 +19,34 @@ const GET = async (req: NextRequest) => {
   }
 };
 
-export { GET };
+const POST = async (req: NextRequest) => {
+  try {
+    const { title, content, postType, userId } = await req.json();
+
+    if (!title || !userId) {
+      return NextResponse.json(
+        { error: "title and userId missing" },
+        { status: 404 }
+      );
+    }
+
+    const newTask = await prisma.post.create({
+      data: {
+        title,
+        content,
+        postType,
+        userId,
+      },
+    });
+
+    return NextResponse.json({ task: newTask }, { status: 201 });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+};
+
+export { GET, POST };

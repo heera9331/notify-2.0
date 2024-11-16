@@ -18,12 +18,12 @@ const Page = ({ params }) => {
   }, []);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-100 p-6">
       <main className="">
         <div className="">
           <h1 className="text-2xl font-semibold">Tasks</h1>
         </div>
-        <div className="flex justify-center items-center py-4">
+        <div className="flex justify-start py-4">
           <CreatePostForm />
         </div>
       </main>

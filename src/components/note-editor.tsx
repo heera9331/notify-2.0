@@ -6,19 +6,27 @@ import MarkdownEditor from "react-markdown-editor-lite";
 import ReactMarkdown from "react-markdown";
 import { axios } from "@/lib/axios";
 import { useUser } from "@/contexts/user-context";
+import { useSearchParams } from "next/navigation";
 
-const NoteEditor = () => {
-  const [note, setNote] = useState({
-    title: "",
-    content: "",
-    parentId: 0,
-    userId: "", // Dynamically set based on user context
-    isPublic: false,
-    category: "",
-  });
+const NoteEditor = ({
+  id,
+  initialNote,
+}: {
+  id?: number;
+  initialNote?: any;
+}) => {
+  const [note, setNote] = useState(
+    initialNote || {
+      title: "",
+      content: "",
+      parentId: 0,
+      userId: "",
+      isPublic: false,
+      category: "",
+    }
+  );
 
   const { user } = useUser();
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -53,35 +61,39 @@ const NoteEditor = () => {
   // Handle form submission
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     setLoading(true);
     setError(null);
     setSuccess(null);
 
     try {
-      console.log(note);
-      const response = await axios.post("/api/notes", note);
+      const payload = {
+        title: note.title,
+        content: note.content,
+        category: note.category,
+        parentId: note.parentId || 0,
+        isPublic: note.isPublic,
+        userId: note.userId,
+      };
 
-      if (response.status === 201) {
-        setSuccess("Note created successfully!");
-        setNote({
-          title: "",
-          content: "",
-          parentId: 0,
-          userId: user?.id.toString() || "",
-          isPublic: false,
-          category: "",
-        });
+      let response;
+      if (id) {
+        // Update existing note
+        response = await axios.put(`/api/notes/${id}`, payload);
       } else {
-        setError("Failed to create note.");
+        // Create new note
+        response = await axios.post("/api/notes", payload);
+      }
+
+      if (response.status === 200 || response.status === 201) {
+        setSuccess(
+          id ? "Note updated successfully!" : "Note created successfully!"
+        );
+      } else {
+        setError("Failed to save note.");
       }
     } catch (err: any) {
-      // Handle Axios errors
-      if (err.response) {
-        setError(err.response.data?.error || "Failed to create note.");
-      } else {
-        setError("An unexpected error occurred.");
-      }
-      console.error("Error:", err);
+      setError(err.response?.data?.error || "An unexpected error occurred.");
     } finally {
       setLoading(false);
     }
@@ -105,21 +117,6 @@ const NoteEditor = () => {
           placeholder="Enter note title"
           className="w-full border rounded p-2"
           required
-        />
-      </div>
-
-      <div>
-        <label htmlFor="parentId" className="block mb-1">
-          Parent ID
-        </label>
-        <input
-          id="parentId"
-          name="parentId"
-          type="number"
-          value={note.parentId}
-          onChange={handleInputChange}
-          placeholder="Enter parent note ID (0 if root)"
-          className="w-full border rounded p-2"
         />
       </div>
 
@@ -172,7 +169,7 @@ const NoteEditor = () => {
         className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
         disabled={loading}
       >
-        {loading ? "Creating Note..." : "Create Note"}
+        {loading ? "Saving Note..." : id ? "Update Note" : "Create Note"}
       </button>
     </form>
   );

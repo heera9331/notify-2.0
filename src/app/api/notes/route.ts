@@ -1,38 +1,35 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
 const POST = async (req: NextRequest) => {
-  const { title, content, parentId, userId, isPublic, category } = req.body;
-  console.log(req);
-  /// console.log(req.body);
-  // Validate required fields
-  if (!title || !content || !userId) {
-    return NextResponse.json(
-      {
-        error: "Title, content, and userId are required.",
-      },
-      { status: 400 }
-    );
-  }
-
   try {
-    // Create the note in the database
+    const { title, content, parentId, userId, isPublic, category } =
+      await req.json();
+
+    if (!title || !userId) {
+      return NextResponse.json(
+        { error: "Title and userId are required." },
+        { status: 400 }
+      );
+    }
+
     const newNote = await prisma.note.create({
       data: {
         title,
         content,
-        parentId: parentId || 0, // Default to root if parentId is not provided
-        userId: Number(userId), // Ensure userId is a number
-        isPublic: Boolean(isPublic), // Ensure isPublic is a boolean
-        category: category || null, // Category is optional
+        userId: Number(userId),
+        isPublic: Boolean(isPublic),
       },
     });
 
-    return NextResponse.json(newNote, { status: 201 });
+    return NextResponse.json(null, { status: 201 });
   } catch (error) {
     console.error("Error creating note:", error);
-
-    NextResponse.json({ error: "Failed to create note." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create note." },
+      { status: 500 }
+    );
   }
 };
 

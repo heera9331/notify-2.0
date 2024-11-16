@@ -1,12 +1,25 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import prisma from "@/lib/prisma";
-import { NextResponse, NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-const GET = async () => {};
+const GET = async (req: NextRequest, res: NextResponse) => {
+  try {
+    const posts = await prisma.post.findMany({});
+    return NextResponse.json({ posts });
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: "All fields are required." },
+      { status: 400 }
+    );
+  }
+};
 
 const POST = async (req: NextRequest, res: NextResponse) => {
-  const { title, content, postType, userId } = req.body;
+  const { title, content, postType, userId } = await req.json();
+  
+  console.log({ title, content, postType, userId });
 
-  if (!title || !content || !postType || !userId) {
+  if (!title || !postType || !userId) {
     return NextResponse.json(
       { error: "All fields are required." },
       { status: 400 }

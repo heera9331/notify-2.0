@@ -17,12 +17,20 @@ const Page = () => {
   }, []);
 
   return (
-    <div className="bg-red-500 min-h-screen">
-      <ul>
-        <li>
-          <Link href={"tasks/0&action=new"}>Create Task</Link>
-        </li>
-      </ul>
+    <div className="min-h-screen p-6 bg-gray-100">
+      <header className="mb-4">
+        <ul className="flex gap-4">
+          <li>
+            <Link
+              href="/tasks/0&action=new"
+              className="text-blue-500 hover:underline"
+            >
+              Create Task
+            </Link>
+          </li>
+        </ul>
+      </header>
+
       <main className="">
         <div className="">
           <Tasks />
@@ -67,7 +75,7 @@ const Tasks = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen ">
       <div className="container mx-auto">
         <h1 className="text-3xl font-bold mb-6">Tasks</h1>
 

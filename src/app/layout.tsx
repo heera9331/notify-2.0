@@ -54,7 +54,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <SidebarProvider>
-          <Sidebar className="border-none w-64  bg-gray-50 rounded-xl min-h-fit-content p-4 shadow-lg transition-all delay-200">
+          <Sidebar className="border-none w-64  bg-gray-50   min-h-fit-content  p-4 rounded shadow hover:shadow-lg transition-shadow delay-200">
             <SidebarContent>
               {/* Application Group */}
               <SidebarGroup>
