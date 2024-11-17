@@ -42,7 +42,6 @@ const POST = async (req: NextRequest) => {
     );
 
     // Remove the password from the user object before sending response
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userWithoutPassword } = user;
 
     // Return success response with token and user details

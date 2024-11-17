@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const GET = async (req: NextRequest) => {
   try {
+    await req.body;
     const tasks = await prisma.post.findMany({
       where: {
         postType: "TASK",

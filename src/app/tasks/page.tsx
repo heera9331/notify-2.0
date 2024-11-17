@@ -3,7 +3,7 @@
 import { Post } from "@prisma/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { axios } from "@/lib/axios";
+import axios, { AxiosError } from "axios";
 
 const Page = () => {
   const [] = useState<Post[]>([]);
@@ -63,9 +63,13 @@ const Tasks = () => {
         const response = await axios.get("/api/tasks");
         console.log(response);
         setTasks(response.data);
-      } catch (err: any) {
-        console.error("Error fetching tasks:", err);
-        setError(err.response?.data?.error || "Failed to fetch tasks.");
+      } catch (err: unknown) {
+        if (axios.isAxiosError(err)) {
+          const axiosError = err as AxiosError<{ error: string }>;
+          setError(axiosError.response?.data?.error || "An error occurred");
+        } else {
+          setError("An unexpected error occurred");
+        }
       } finally {
         setLoading(false);
       }

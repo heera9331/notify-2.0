@@ -85,12 +85,12 @@ export const useUser = (): UserContextType => {
   return context;
 };
 
-interface Attachment {
-  _id: string;
-  fileName: string;
-  fileUrl: string;
-  uploadedAt: string;
-}
+// interface Attachment {
+//   _id: string;
+//   fileName: string;
+//   fileUrl: string;
+//   uploadedAt: string;
+// }
 
 interface Board {
   id: number;

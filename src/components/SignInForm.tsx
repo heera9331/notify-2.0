@@ -1,5 +1,5 @@
 import { Label } from "@radix-ui/react-label";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 
 import { useState, ChangeEvent, FormEvent } from "react";
@@ -38,8 +38,13 @@ const SignInForm = () => {
       localStorage.setItem("token", JSON.stringify(token));
       // Redirect to /home after successful login
       router.push("/home");
-    } catch (err: any) {
-      setError(err.response?.data?.error || "An error occurred");
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        const axiosError = err as AxiosError<{ error: string }>;
+        setError(axiosError.response?.data?.error || "An error occurred");
+      } else {
+        setError("An unexpected error occurred");
+      }
     } finally {
       setLoading(false);
     }

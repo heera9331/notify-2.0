@@ -4,16 +4,16 @@ import { useEffect, useState } from "react";
 import "react-markdown-editor-lite/lib/index.css";
 import MarkdownEditor from "react-markdown-editor-lite";
 import ReactMarkdown from "react-markdown";
-import { axios } from "@/lib/axios";
 import { useUser } from "@/contexts/user-context";
-import { useSearchParams } from "next/navigation";
+import axios, { AxiosError } from "axios";
+import { Note } from "@prisma/client";
 
 const NoteEditor = ({
   id,
   initialNote,
 }: {
   id?: number;
-  initialNote?: any;
+  initialNote?: Note;
 }) => {
   const [note, setNote] = useState(
     initialNote || {
@@ -33,7 +33,7 @@ const NoteEditor = ({
 
   useEffect(() => {
     if (user?.id) {
-      setNote((prevNote) => ({
+      setNote((prevNote: any) => ({
         ...prevNote,
         userId: user.id.toString(),
       }));
@@ -92,8 +92,13 @@ const NoteEditor = ({
       } else {
         setError("Failed to save note.");
       }
-    } catch (err: any) {
-      setError(err.response?.data?.error || "An unexpected error occurred.");
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        const axiosError = err as AxiosError<{ error: string }>;
+        setError(axiosError.response?.data?.error || "An error occurred");
+      } else {
+        setError("An unexpected error occurred");
+      }
     } finally {
       setLoading(false);
     }
@@ -140,7 +145,7 @@ const NoteEditor = ({
           id="category"
           name="category"
           type="text"
-          value={note.category}
+          value={note.category || 0}
           onChange={handleInputChange}
           placeholder="Enter note category"
           className="w-full border rounded p-2"
