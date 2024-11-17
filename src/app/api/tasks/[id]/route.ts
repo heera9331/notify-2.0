@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 // GET: Fetch a single task by ID
-export const GET = async (
+const GET = async (
   req: NextRequest,
   { params }: { params: { id: string } }
 ) => {
@@ -28,7 +28,7 @@ export const GET = async (
 };
 
 // PATCH: Update a task by ID
-export const PUT = async (
+const PUT = async (
   req: NextRequest,
   { params }: { params: { id: string } }
 ) => {
@@ -48,10 +48,10 @@ export const PUT = async (
     return NextResponse.json(updatedTask);
   } catch (error) {
     console.error("PATCH Error:", error);
-    if (error.code === "P2025") {
-      // Prisma record not found error
-      return NextResponse.json({ error: "Task not found" }, { status: 404 });
-    }
+    // if (error.code === "P2025") {
+    //   // Prisma record not found error
+    //   return NextResponse.json({ error: "Task not found" }, { status: 404 });
+    // }
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -60,7 +60,7 @@ export const PUT = async (
 };
 
 // DELETE: Delete a task by ID
-export const DELETE = async (
+const DELETE = async (
   req: NextRequest,
   { params }: { params: { id: string } }
 ) => {
@@ -74,13 +74,15 @@ export const DELETE = async (
     return NextResponse.json(deletedTask);
   } catch (error) {
     console.error("DELETE Error:", error);
-    if (error.code === "P2025") {
-      // Prisma record not found error
-      return NextResponse.json({ error: "Task not found" }, { status: 404 });
-    }
+    // if (error.code === "P2025") {
+    // return NextResponse.json({ error: "Task not found" }, { status: 404 });
+    //   // Prisma record not found error
+    // }
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
     );
   }
 };
+
+export { GET, PUT, DELETE };
