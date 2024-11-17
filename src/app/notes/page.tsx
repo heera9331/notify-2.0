@@ -23,7 +23,7 @@ const Page = () => {
         <ul className="flex gap-4">
           <li>
             <Link
-              href="/notes/0&action=new"
+              href="/notes/0?action=new"
               className="text-blue-500 hover:underline"
             >
               Create Note
@@ -32,7 +32,7 @@ const Page = () => {
         </ul>
       </header>
 
-      <main>
+      <main className="w-full">
         <div className="mb-6">
           <h1 className="text-2xl font-semibold">Notes</h1>
           <p>Total Notes: {notes.length}</p>
@@ -42,7 +42,7 @@ const Page = () => {
           {notes.map((note) => (
             <div
               key={note.id}
-              className="flex flex-col gap-4 w-full bg-white p-4 rounded shadow hover:shadow-lg transition-shadow"
+              className="flex flex-col gap-4 w-full overflow-hidden bg-white p-4 rounded shadow hover:shadow-lg transition-shadow"
             >
               <h2 className="font-bold text-lg mb-2">{note.title}</h2>
               <p className="text-sm text-gray-600 mb-4">

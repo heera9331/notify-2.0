@@ -7,8 +7,9 @@ import NoteEditor from "@/components/note-editor";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import { useSearchParams, useRouter } from "next/navigation";
+import { Card } from "@/components/ui/card";
 
-const Page = ({ params }) => {
+const Page = ({ params }: { params: { id: string } }) => {
   const [note, setNote] = useState<Note | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +22,7 @@ const Page = ({ params }) => {
     const fetchNote = async () => {
       if (id && action === "edit") {
         try {
-          const response = await axios.get(`/api/notes/${id}`);
+          const response = await axios.get(`/api/notes/${Number(id)}`);
           console.log(response);
           setNote(response.data);
         } catch (err: any) {
@@ -40,40 +41,45 @@ const Page = ({ params }) => {
   if (loading) return <div className="p-4">Loading...</div>;
   if (error) return <div className="p-4 text-red-500">{error}</div>;
 
-  if (action === "edit" || action === "new") {
-    return (
-      <NoteEditor id={action === "edit" ? id : undefined} initialNote={note} />
-    );
-  }
+  const noteEdotor = (
+    <NoteEditor id={action === "edit" ? id : undefined} initialNote={note} />
+  );
 
   return (
     <div className="min-h-screen p-6 bg-gray-100">
-      <header className="mb-4 flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">View Note</h1>
-        <button
-          onClick={() => router.push(`/notes/${id}?action=edit`)}
-          className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-        >
-          Edit Note
-        </button>
-      </header>
+      <div className="min-h-screen bg-gray-100">
+        <header className="mb-4 flex justify-between items-center">
+          {action == "view" && (
+            <button
+              onClick={() => router.push(`/notes/${id}?action=edit`)}
+              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+            >
+              Edit Note
+            </button>
+          )}
+        </header>
 
-      <main className="bg-white p-4 rounded shadow hover:shadow-lg transition-shadow ">
-        <h2 className="text-xl font-bold mb-4">{note?.title}</h2>
-        <p className="text-sm text-gray-600 mb-4">
-          <span className="font-semibold">Category:</span>{" "}
-          {note?.category || "Uncategorized"}
-        </p>
-        <p className="text-sm text-gray-600 mb-4">
-          <span className="font-semibold">Public:</span>{" "}
-          {note?.isPublic ? "Yes" : "No"}
-        </p>
-        <article className="prose max-w-none">
-          <ReactMarkdown rehypePlugins={[rehypeRaw]}>
-            {note?.content || ""}
-          </ReactMarkdown>
-        </article>
-      </main>
+        {action === "view" && (
+          <Card className="">
+            <h2 className="text-xl font-bold mb-4">{note?.title}</h2>
+            <p className="text-sm text-gray-600 mb-4">
+              <span className="font-semibold">Category:</span>
+              {note?.category || "Uncategorized"}
+            </p>
+            <p className="text-sm text-gray-600 mb-4">
+              <span className="font-semibold">Public:</span>
+              {note?.isPublic ? "Yes" : "No"}
+            </p>
+            <article className="prose max-w-none">
+              <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                {note?.content || ""}
+              </ReactMarkdown>
+            </article>
+          </Card>
+        )}
+
+        {action === "edit" || (action === "new" && <>{noteEdotor}</>)}
+      </div>
     </div>
   );
 };

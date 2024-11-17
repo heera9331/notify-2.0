@@ -1,12 +1,7 @@
 import axios from "axios";
 
 // Create an Axios instance
-const axiosInstance = axios.create({
-  timeout: 5000,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+const axiosInstance = axios.create();
 
 // Interceptor to add Authorization token to requests
 axiosInstance.interceptors.request.use(

@@ -36,7 +36,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   }, [user]);
 
   useEffect(() => {
-    getAllBoards();
+    // getAllBoards();
     getPosts();
   }, []);
 
@@ -45,7 +45,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
       const resposne = await axios.get("/board");
       setBoards(resposne.data);
     } catch (error) {
-      console.error(error);
+      console.lof(error);
     }
   };
 

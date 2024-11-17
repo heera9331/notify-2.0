@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-const GET = async (req: NextRequest, { params }) => {
+const GET = async (
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) => {
   try {
-    console.log(params);
+    let { id } = params;
+    let intId = Number(id);
     // Fetch all notes
-    const notes = await prisma.note.findUnique({ where: { id: 10 } });
+    const notes = await prisma.note.findUnique({ where: { id: intId } });
     return NextResponse.json(notes, { status: 200 });
   } catch (error) {
     console.error("Error fetching notes:", error);
