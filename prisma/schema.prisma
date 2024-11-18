@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
+  url      = env("ONLINE_DATABASE_URL")
 }
 
 model User {
@@ -34,7 +34,7 @@ model Post {
 model Note {
   id         Int       @id @default(autoincrement())
   title      String
-  content    String
+  content    String    @db.Text
   parentId   Int? // Nullable for root notes
   parent     Note?     @relation("NoteParent", fields: [parentId], references: [id]) // Self-relation for hierarchical notes
   children   Note[]    @relation("NoteParent") // For child notes
