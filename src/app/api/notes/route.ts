@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-const POST = async (req: NextRequest) => {
+export const POST = async (req: NextRequest) => {
   try {
     const { title, content, parentId, userId, isPublic, category } =
       await req.json();
@@ -32,7 +32,7 @@ const POST = async (req: NextRequest) => {
   }
 };
 
-const GET = async () => {
+export const GET = async () => {
   try {
     // Fetch all notes
     const notes = await prisma.note.findMany();
@@ -45,5 +45,4 @@ const GET = async () => {
     );
   }
 };
-
-export { GET, POST };
+ 
