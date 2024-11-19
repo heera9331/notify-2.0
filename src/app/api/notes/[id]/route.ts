@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-const GET = async (
+// Correctly typed handler for API route
+export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
-) => {
+  { params }: { params: Record<string, string> }
+) {
   try {
     const { id } = params;
     const intId = parseInt(id, 10); // Convert ID to an integer
@@ -24,10 +25,7 @@ const GET = async (
 
     // Check if the note exists
     if (!note) {
-      return NextResponse.json(
-        { error: "Note not found." },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Note not found." }, { status: 404 });
     }
 
     // Return the note data
@@ -41,6 +39,4 @@ const GET = async (
       { status: 500 }
     );
   }
-};
-
-export { GET };
+}
