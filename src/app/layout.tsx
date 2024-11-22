@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import MainSidebar from "@/components/sidebar";
 import type { Metadata } from "next";
 import "./globals.css";
@@ -38,25 +38,35 @@ export default function RootLayout({
           <div className="sidebar bg-gray-100 w-1/5 p-4 border border-right">
             <ul className="flex flex-col gap-2">
               <li className="bg-gray-50 active:bg-white hover:bg-white rounded-lg cursor-pointer">
-                <Link className="block py-2 px-4 w-full" href={"/home"}>Home</Link>
+                <Link className="block py-2 px-4 w-full" href={"/home"}>
+                  Home
+                </Link>
               </li>
               <li className="bg-gray-50 active:bg-white hover:bg-white rounded-lg cursor-pointer">
-                <Link className="block py-2 px-4 w-full" href={"/notes"}>Notes</Link>
+                <Link className="block py-2 px-4 w-full" href={"/notes"}>
+                  Notes
+                </Link>
               </li>
               <li className="bg-gray-50 active:bg-white hover:bg-white rounded-lg cursor-pointer">
-                <Link className="block py-2 px-4 w-full" href={"/tasks"}>Tasks</Link>
+                <Link className="block py-2 px-4 w-full" href={"/tasks"}>
+                  Tasks
+                </Link>
               </li>
               <li className="bg-gray-50 active:bg-white hover:bg-white rounded-lg cursor-pointer">
-                <Link className="block py-2 px-4 w-full" href={"/auth"}>Logout</Link>
+                <Link className="block py-2 px-4 w-full" href={"/settings"}>
+                  Settings
+                </Link>
               </li>
-               
+              <li className="bg-gray-50 active:bg-white hover:bg-white rounded-lg cursor-pointer">
+                <Link className="block py-2 px-4 w-full" href={"/auth"}>
+                  Logout
+                </Link>
+              </li>
             </ul>
           </div>
           <Main>{children}</Main>
         </div>
-        <footer className="text-center text-gray-500">
-          This is the layout page after the children
-        </footer>
+        <footer className="text-center text-gray-500"></footer>
       </body>
     </html>
   );

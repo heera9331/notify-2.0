@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("ONLINE_DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -54,6 +54,14 @@ enum PostType {
   POST
   NOTE
   TASK
+}
+
+model Category {
+  id  Int @id @default(autoincrement())
+  title String
+  description String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
 
 model Comment {
