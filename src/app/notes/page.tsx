@@ -4,18 +4,10 @@ import { useEffect, useState } from "react";
 import { Note } from "@prisma/client";
 import { axios } from "@/lib/axios";
 import Link from "next/link";
+import { useNotes } from "@/hooks/use-notes";
 
 const Page = () => {
-  const [notes, setNotes] = useState<Note[]>([]);
-
-  useEffect(() => {
-    (async () => {
-      const response = await axios.get("/api/notes");
-      const data = response.data;
-      console.log(data);
-      setNotes(data);
-    })();
-  }, []);
+  const { notes } = useNotes();
 
   return (
     <div className="min-h-screen p-6 bg-gray-100">
@@ -38,14 +30,14 @@ const Page = () => {
           <p>Total Notes: {notes.length}</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 overflow-hidden">
           {notes.map((note) => (
             <div
               key={note.id}
               className="flex flex-col gap-4 w-full overflow-hidden bg-white p-4 rounded shadow hover:shadow-lg transition-shadow"
             >
               <h2 className="font-bold text-lg mb-2">{note.title}</h2>
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-gray-600 mb-4 overflow-hidden">
                 {note.content.length > 100
                   ? `${note.content.slice(0, 100)}...`
                   : note.content}

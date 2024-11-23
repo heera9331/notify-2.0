@@ -1,16 +1,26 @@
-"use client"
+"use client";
 import { useState } from "react";
 import MarkdownEditor from "react-markdown-editor-lite";
 import ReactMarkdown from "react-markdown";
 import "react-markdown-editor-lite/lib/index.css";
 
-const CreatePostForm = () => {
-  const [post, setPost] = useState({
-    title: "",
-    content: "",
-    postType: "POST", // Default to POST
-    userId: 4, // This should be dynamically set based on the logged-in user
-  });
+interface TaskProps {
+  id?: 0;
+  title: string;
+  content: string;
+  postType: string;
+  userId: number;
+}
+
+const CreatePostForm = ({ intialTask }: TaskProps) => {
+  const [post, setPost] = useState(
+    intialTask || {
+      title: "",
+      content: "",
+      postType: "POST", // Default to POST
+      userId: 4, // This should be dynamically set based on the logged-in user
+    }
+  );
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

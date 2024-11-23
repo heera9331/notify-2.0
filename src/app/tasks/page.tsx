@@ -1,21 +1,13 @@
 "use client";
 
-import { Post } from "@prisma/client";
+import { Task } from "@prisma/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
 
 const Page = () => {
-  const [] = useState<Post[]>([]);
-
-  useEffect(() => {
-    (async () => {
-      const response = await axios.get("/api/tasks");
-      const data = response.data;
-      console.log(data);
-    })();
-  }, []);
-
+  const [] = useState<Task[]>([]);
+ 
   return (
     <div className="min-h-screen p-6 bg-gray-100">
       <header className="mb-4">
@@ -105,6 +97,13 @@ const Tasks = () => {
                 <strong>Created:</strong>{" "}
                 {new Date(task.createdAt).toLocaleDateString()}
               </p>
+
+              <Link
+                href={`/tasks/${task.id}?action=view`}
+                className="text-blue-500 hover:underline text-sm"
+              >
+                View Details
+              </Link>
             </li>
           ))}
         </ul>

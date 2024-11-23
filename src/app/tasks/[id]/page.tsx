@@ -1,21 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Post } from "@prisma/client";
 import { axios } from "@/lib/axios";
 import CreatePostForm from "@/components/create-post-form";
-const Page = ({ params }) => {
-  const [] = useState<Post[]>([]);
+import { useTasks } from "@/hooks/use-tasks";
 
-  console.log(params.id);
+interface PageProps {
+  params: {
+    id: string;
+  };
+}
+const Page = ({ params }: PageProps) => {
+  const [task, setTask] = useState<Post[]>([]);
+  const { getTask } = useTasks();
+  const param = use(params);
 
   useEffect(() => {
-    (async () => {
-      const response = await axios.get("/api/tasks");
-      const data = response.data;
-      console.log(data);
-    })();
-  }, []);
+    const task = getTask(Number(params.id));
+    setTask(task);
+  }, [getTask, params.id]);
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -24,7 +28,7 @@ const Page = ({ params }) => {
           <h1 className="text-2xl font-semibold">Tasks</h1>
         </div>
         <div className="flex justify-start py-4">
-          <CreatePostForm />
+          <CreatePostForm intialTask={task}/>
         </div>
       </main>
     </div>
