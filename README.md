@@ -13,3 +13,7 @@ npm run build
 ```sh
 npx build -DEBUG
 ```
+
+## Todos
+
+- todo create category form
