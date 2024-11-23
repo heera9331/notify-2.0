@@ -1,5 +1,5 @@
-"use client"
-import { useEffect, useRef, useState } from "react";
+"use client";
+import { use, useEffect, useRef, useState } from "react";
 import EditorJS from "@editorjs/editorjs";
 import Header from "@editorjs/header";
 import List from "@editorjs/list";
@@ -20,27 +20,40 @@ import { Loader2, Save } from "lucide-react";
 import axios from "axios";
 import "@/app/globals.css";
 import css from "styled-jsx/css";
+import { useSearchParams } from "next/navigation";
 
 const EDITOR_HOLDER_ID = "editorjs-container";
 
-const NoteEditor = ({
-  id,
-  initialNote,
-}: {
-  id?: number;
-  initialNote?: any;
-}) => {
+interface NoteProps {
+  id: number;
+  initialNote?: {
+    id: number;
+    title: string;
+    content: string;
+    userId: number;
+  };
+}
+
+const NoteEditor = ({ id: number, initialNote }: NoteProps) => {
   // const { toast } = useToast();
   const editorInstance = useRef<EditorJS | null>(null);
+
   const [note, setNote] = useState(
     initialNote || {
-      title: "",
-      content: "",
+      id: 0,
+      title: "Post title",
+      content: "{}",
       userId: 4,
     }
   );
 
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (initialNote) {
+      setNote(initialNote);
+    }
+  }, [initialNote]);
 
   useEffect(() => {
     if (!editorInstance.current) {
@@ -49,8 +62,6 @@ const NoteEditor = ({
 
     return () => {
       if (editorInstance.current) {
-        // editorInstance.current.destroy();
-
         editorInstance.current = null;
       }
     };
@@ -136,34 +147,20 @@ const NoteEditor = ({
     try {
       const data = JSON.parse(note.content ?? "");
 
-      const title = data.blocks
-        .filter(
-          (block: any) => block.type === "header" && block.data.level === 1
-        )
-        .map((block: any) => block.data.text);
-
       let payload = {
-        title: null,
-        content: note.content,
-        userId: 4
-      };
-
-      if (title && title[0]) {
-        payload = { ...payload, title: title[0] };
-      }
-
-      payload = {
-        ...payload,
-        content: note.content,
+        title: note.title,
+        content: data,
+        userId: 4,
       };
 
       console.log(payload);
 
       const response = await axios({
-        method: id ? "put" : "post",
-        url: id ? `/api/notes/${id}` : "/api/notes",
+        method: note.id ? "put" : "post",
+        url: note.id ? `/api/notes/${note.id}` : "/api/notes",
         data: payload,
       });
+
       console.log(response);
 
       if (response.status === 200 || response.status === 201) {
@@ -197,8 +194,16 @@ const NoteEditor = ({
         </Button>
       </div>
 
-      <Card className="bg-gray-50 border-none shadow-none hover:shadow-none py-14 max-w-[900px]">
-        <div className="">
+      <Card className="flex justify-center flex-col gap-2 items-center bg-gray-50 border-none shadow-none hover:shadow-none py-14 max-w-[900px]">
+        <input
+          type="text"
+          value={note.title}
+          name="title"
+          onChange={handleTitleChange}
+          className="w-[80%] py-2 px-4 bg-gray-50 text-3xl font-bold active:focus:bg-white"
+          placeholder="Set note title"
+        />
+        <div className="w-[80%]">
           <div
             id={EDITOR_HOLDER_ID}
             className="prose prose-stone dark:prose-invert max-w-none"
