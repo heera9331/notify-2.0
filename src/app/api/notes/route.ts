@@ -6,6 +6,8 @@ export const POST = async (req: NextRequest) => {
     const { title, content, parentId, userId, isPublic, category } =
       await req.json();
 
+    console.log(title, content);
+
     if (!title || !userId) {
       return NextResponse.json(
         { error: "Title and userId are required." },
@@ -16,13 +18,13 @@ export const POST = async (req: NextRequest) => {
     const newNote = await prisma.note.create({
       data: {
         title,
-        content,
+        content: JSON.stringify(content),
         userId: Number(userId),
         isPublic: Boolean(isPublic),
       },
     });
 
-    return NextResponse.json(null, { status: 201 });
+    return NextResponse.json({ note: newNote }, { status: 201 });
   } catch (error) {
     console.error("Error creating note:", error);
     return NextResponse.json(
@@ -45,4 +47,3 @@ export const GET = async () => {
     );
   }
 };
- 
