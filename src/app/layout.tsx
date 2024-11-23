@@ -2,21 +2,7 @@
 import MainSidebar from "@/components/sidebar";
 import type { Metadata } from "next";
 import "./globals.css";
-import {
-  Home,
-  Inbox,
-  Calendar,
-  Search,
-  Settings,
-  Plus,
-  ChevronDown,
-  Notebook,
-} from "lucide-react";
-import {
-  Collapsible,
-  CollapsibleTrigger,
-  CollapsibleContent,
-} from "@radix-ui/react-collapsible";
+
 import Main from "@/components/main";
 import Link from "next/link";
 

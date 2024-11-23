@@ -1,3 +1,4 @@
+"use client"
 import { useEffect, useRef, useState } from "react";
 import EditorJS from "@editorjs/editorjs";
 import Header from "@editorjs/header";

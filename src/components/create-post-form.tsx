@@ -1,3 +1,4 @@
+"use client"
 import { useState } from "react";
 import MarkdownEditor from "react-markdown-editor-lite";
 import ReactMarkdown from "react-markdown";

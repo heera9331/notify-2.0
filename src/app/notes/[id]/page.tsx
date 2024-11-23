@@ -16,7 +16,7 @@ const Page = ({ params }: { params: { id: string } }) => {
   const searchParams = useSearchParams();
   const action = searchParams?.get("action") || "view"; // Get the action from the query
   const router = useRouter();
-  const { id } = use(params);
+  const { id }: { id: string } = use(params);
 
   useEffect(() => {
     const fetchNote = async () => {

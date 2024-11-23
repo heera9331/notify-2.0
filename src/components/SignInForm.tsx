@@ -1,3 +1,4 @@
+'use client'
 import { Label } from "@radix-ui/react-label";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";

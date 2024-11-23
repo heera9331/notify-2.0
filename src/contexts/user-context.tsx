@@ -45,7 +45,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
       const resposne = await axios.get("/board");
       setBoards(resposne.data);
     } catch (error) {
-      console.lof(error);
+      console.log(error);
     }
   };
 
