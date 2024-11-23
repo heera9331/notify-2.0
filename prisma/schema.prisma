@@ -16,6 +16,8 @@ model User {
   posts    Post[]
   Comment  Comment[]
   Note     Note[]
+
+  Task Task[]
 }
 
 model Post {
@@ -50,12 +52,33 @@ model Note {
   updatedAt  DateTime  @updatedAt
 }
 
+model Task {
+  id         Int       @id @default(autoincrement())
+  title      String
+  content    String    @db.Text
+  parentId   Int? // Nullable for root notes
+  parent     Task?     @relation("TaskParent", fields: [parentId], references: [id]) // Self-relation for hierarchical notes
+  children   Task[]    @relation("TaskParent") // For child notes
+  userId     Int
+  user       User      @relation(fields: [userId], references: [id]) // Relates a note to its author
+  comments   Comment[]
+  tags       Tag[]     @relation("NoteTags") // Many-to-many relation with Tag
+  status     String
+  dueDate    DateTime
+  isArchived Boolean   @default(false) // Indicates if the note is archived
+  isDeleted  Boolean   @default(false) // Indicates if the note is soft-deleted
+  isPublic   Boolean   @default(false) // Indicates if the note is public
+  category   String? // Optional field for note categorization
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
 enum PostType {
   POST
   NOTE
   TASK
 }
-
+  
 model Category {
   id  Int @id @default(autoincrement())
   title String
@@ -74,6 +97,8 @@ model Comment {
   user     User   @relation(fields: [userId], references: [id])
   Note     Note?  @relation(fields: [noteId], references: [id])
   noteId   Int?
+
+  Task Task[]
 }
 
 model Tag {
@@ -81,4 +106,6 @@ model Tag {
   name  String @unique
   posts Post[] @relation("PostTags") // Many-to-many relation with Post
   notes Note[] @relation("NoteTags") // Many-to-many relation with Note
+
+  Task Task[] @relation("NoteTags")
 }
