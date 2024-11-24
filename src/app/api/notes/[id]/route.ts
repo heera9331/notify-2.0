@@ -40,3 +40,24 @@ export async function GET(
     );
   }
 }
+
+export const DELETE = async (
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) => {
+  const { id } = params;
+
+  try {
+    const deletedNote = await prisma.note.delete({
+      where: { id: Number(id) },
+    });
+
+    return NextResponse.json(deletedNote);
+  } catch (error) {
+    console.error("DELETE Error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+};

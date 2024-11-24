@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -19,63 +19,54 @@ import { NotesSection } from "@/components/dashboard/notes-section";
 import { StatsCard } from "@/components/dashboard/stats-card";
 import { CreateTaskDialog } from "@/components/dashboard/create-task-dialog";
 import { TaskList } from "@/components/dashboard/task-list";
+import { useTasks } from "@/hooks/use-tasks";
+import { usePosts } from "@/hooks/use-posts";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
+// "TODO" | "IN_PROGRESS" | "DONE";
 
 export default function Home() {
   const [progress] = useState(65);
+  const { tasks } = useTasks();
+  const taskStats = {
+    todo: 0,
+    inProgess: 0,
+    done: 0,
+    total: 0,
+  };
+
+  useEffect(() => {
+    const total = tasks.length;
+    taskStats.total = total;
+    taskStats.inProgess = tasks.filter(
+      (task) => task.status === "PENDING"
+    ).length;
+    taskStats.done = tasks.filter((task) => task.status === "COMPLETED").length;
+  }, [tasks]);
 
   const stats = [
     {
-      label: "Completed",
-      value: "24",
+      label: "Total",
+      value: taskStats.total,
       icon: CheckCircle2,
       color: "text-green-500",
     },
-    { label: "In Progress", value: "12", icon: Clock, color: "text-blue-500" },
     {
-      label: "Pending",
-      value: "8",
+      label: "Completed",
+      value: taskStats.done,
+      icon: CheckCircle2,
+      color: "text-green-500",
+    },
+    { label: "In Progress", value: taskStats.inProgess, icon: Clock, color: "text-blue-500" },
+    {
+      label: "Todo",
+      value: taskStats.inProgess,
       icon: AlertCircle,
       color: "text-orange-500",
     },
   ];
 
-  const tasks = [
-    {
-      id: 1,
-      title: "Update user interface design",
-      description: "Implement new design system across all pages",
-      priority: "HIGH",
-      dueDate: "2024-03-20T00:00:00Z",
-      status: "IN_PROGRESS",
-    },
-    {
-      id: 2,
-      title: "Review code documentation",
-      description: "Update API documentation and examples",
-      priority: "MEDIUM",
-      dueDate: "2024-03-21T00:00:00Z",
-      status: "TODO",
-    },
-    {
-      id: 3,
-      title: "Fix authentication bugs",
-      description: "Address user reported login issues",
-      priority: "HIGH",
-      dueDate: "2024-03-20T00:00:00Z",
-      status: "IN_PROGRESS",
-    },
-    {
-      id: 4,
-      title: "Prepare sprint presentation",
-      description: "Create slides for sprint review",
-      priority: "MEDIUM",
-      dueDate: "2024-03-27T00:00:00Z",
-      status: "TODO",
-    },
-  ];
-
   return (
-    <div className="grid grid-rows-[auto_1fr_auto] min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="grid grid-rows-[auto_1fr_auto] min-h-screen bg-gray-100 dark:bg-gray-900">
       {/* Header */}
       <header className="border-b bg-white dark:bg-gray-800 p-4 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
@@ -111,7 +102,7 @@ export default function Home() {
           </div>
 
           {/* Calendar */}
-          <div>
+          <div className="bg-white shadow rounded hover:shadow-lg h-full">
             <CalendarView tasks={tasks} />
           </div>
         </div>

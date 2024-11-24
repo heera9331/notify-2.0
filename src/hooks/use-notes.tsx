@@ -42,9 +42,11 @@ export function useNotes() {
     console.log(newNote);
   };
 
-  const deleteNote = (id: number) => {
-    console.log("delete api request");
-    console.log(id);
+  const deleteNote = async (id: number) => {
+    const response = await axios.delete(`/api/notes/${id}`);
+    const tmp = notes.filter((note) => note.id !== id);
+    setNotes(tmp);
+    return response;
   };
 
   return { notes, setNotes, getNote, updateNote, deleteNote };

@@ -37,7 +37,11 @@ export const POST = async (req: NextRequest) => {
 export const GET = async () => {
   try {
     // Fetch all notes
-    const notes = await prisma.note.findMany();
+    const notes = await prisma.note.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
     return NextResponse.json(notes, { status: 200 });
   } catch (error) {
     console.error("Error fetching notes:", error);

@@ -3,13 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 const GET = async (req: NextRequest) => {
   try {
-    await req.body;
-    const tasks = await prisma.post.findMany({
-      where: {
-        postType: "TASK",
+    const tasks = await prisma.task.findMany({
+      orderBy: {
+        createdAt: "desc",
       },
     });
-
     return NextResponse.json(tasks);
   } catch (error) {
     console.log(error);
@@ -22,7 +20,7 @@ const GET = async (req: NextRequest) => {
 
 const POST = async (req: NextRequest) => {
   try {
-    const { title, content, postType, userId } = await req.json();
+    const { title, content, userId, status, dueDate } = await req.json();
 
     if (!title || !userId) {
       return NextResponse.json(
@@ -31,16 +29,17 @@ const POST = async (req: NextRequest) => {
       );
     }
 
-    const newTask = await prisma.post.create({
+    const newtask = await prisma.task.create({
       data: {
         title,
         content,
-        postType,
         userId,
+        status,
+        dueDate,
       },
     });
 
-    return NextResponse.json({ task: newTask }, { status: 201 });
+    return NextResponse.json({ task: newtask }, { status: 201 });
   } catch (error) {
     console.log(error);
     return NextResponse.json(

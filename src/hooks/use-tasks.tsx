@@ -13,7 +13,7 @@ export function useTasks() {
     } else {
       fetchTasks();
     }
-  }, []);
+  }, [tasks]);
 
   const fetchTasks = async () => {
     try {
@@ -41,10 +41,27 @@ export function useTasks() {
     console.log(newTask);
   };
 
-  const deleteTask = (id: number) => {
-    console.log("delete api request");
-    console.log(id);
+  const deleteTask = async (id: number) => {
+    const response = await axios.delete(`/api/tasks/${id}`);
+    const tmp = tasks.filter((task) => task.id != id);
+    setTasks(tmp);
+    return response;
   };
 
-  return { tasks, setTasks, getTask, updateTask, deleteTask };
+  interface AddTaskProp {
+    task: any;
+    update?: boolean;
+  }
+
+  const addTask = async ({ task, update = false }: AddTaskProp) => {
+    if (!update) {
+      const response = await axios.post("/api/tasks", task);
+      return response;
+    } else {
+      const response = await axios.put("/api/tasks", task);
+      return response;
+    }
+  };
+
+  return { tasks, setTasks, getTask, updateTask, deleteTask, addTask };
 }

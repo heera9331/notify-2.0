@@ -15,11 +15,11 @@ const GET = async (req: NextRequest) => {
 };
 
 const POST = async (req: NextRequest) => {
-  const { title, content, postType, userId } = await req.json();
+  const { title, content, userId, category } = await req.json();
 
-  console.log({ title, content, postType, userId });
+  console.log({ title, content, userId });
 
-  if (!title || !postType || !userId) {
+  if (!title || !userId) {
     return NextResponse.json(
       { error: "All fields are required." },
       { status: 400 }
@@ -27,16 +27,16 @@ const POST = async (req: NextRequest) => {
   }
 
   try {
-    const newPost = await prisma.post.create({
+    const newTask = await prisma.task.create({
       data: {
         title,
         content,
-        postType,
+        category,
         userId: Number(userId),
       },
     });
 
-    return NextResponse.json({ post: newPost }, { status: 201 });
+    return NextResponse.json({ task: newTask }, { status: 201 });
   } catch (error) {
     console.error("Error creating post:", error);
 

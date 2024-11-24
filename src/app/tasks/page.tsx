@@ -1,113 +1,61 @@
 "use client";
 
-import { Task } from "@prisma/client";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import axios, { AxiosError } from "axios";
+import { useState } from "react";
+import { useTasks } from "@/hooks/use-tasks";
+import TaskList from "@/components/tasks/tasks-List";
+import { CreateTaskDialog } from "@/components/dashboard/create-task-dialog";
+import KanbanBoard from "@/components/tasks/kanban-board";
+import { Layout, LayoutDashboard } from "lucide-react";
 
 const Page = () => {
-  const [] = useState<Task[]>([]);
- 
+  const [taskView, setTaskView] = useState<"list" | "kanban">("list"); // Define possible views
+  const { tasks = [] } = useTasks(); // Default to an empty array to avoid errors
+
   return (
     <div className="min-h-screen p-6 bg-gray-100">
-      <header className="mb-4">
-        <ul className="flex gap-4">
-          <li>
-            <Link
-              href="/tasks/0&action=new"
-              className="text-blue-500 hover:underline"
-            >
-              Create Task
-            </Link>
-          </li>
-        </ul>
+      {/* Header with Create Task Button */}
+      <header className="flex justify-between items-center mb-6">
+        <CreateTaskDialog />
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setTaskView("list")}
+            className={`flex items-center gap-2 px-3 py-1 border rounded ${
+              taskView === "list"
+                ? "bg-gray-300 text-black"
+                : "bg-white text-gray-600"
+            }`}
+          >
+            <Layout className="w-4 h-4" />
+            List View
+          </button>
+          <button
+            onClick={() => setTaskView("kanban")}
+            className={`flex items-center gap-2 px-3 py-1 border rounded ${
+              taskView === "kanban"
+                ? "bg-gray-300 text-black"
+                : "bg-white text-gray-600"
+            }`}
+          >
+            <LayoutDashboard className="w-4 h-4" />
+            Kanban View
+          </button>
+        </div>
       </header>
 
-      <main className="">
-        <div className="">
-          <Tasks />
-        </div>
-      </main>
-    </div>
-  );
-};
-
-type Task = {
-  id: number;
-  title: string;
-  content: string;
-  postType: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
-const Tasks = () => {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchTasks = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const response = await axios.get("/api/tasks");
-        console.log(response);
-        setTasks(response.data);
-      } catch (err: unknown) {
-        if (axios.isAxiosError(err)) {
-          const axiosError = err as AxiosError<{ error: string }>;
-          setError(axiosError.response?.data?.error || "An error occurred");
-        } else {
-          setError("An unexpected error occurred");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTasks();
-  }, []);
-
-  return (
-    <div className="min-h-screen ">
-      <div className="container mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Tasks</h1>
-
-        {loading && <p>Loading tasks...</p>}
-        {error && <p className="text-red-500">{error}</p>}
-
-        {!loading && !error && tasks.length === 0 && (
-          <p>No tasks found. Create a new one!</p>
+      {/* Main Content */}
+      <main>
+        {tasks.length > 0 ? (
+          taskView === "list" ? (
+            <TaskList tasks={tasks} />
+          ) : (
+            <KanbanBoard />
+          )
+        ) : (
+          <p className="text-gray-600 text-center mt-10">
+            No tasks found. Create a new one!
+          </p>
         )}
-
-        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {tasks.map((task) => (
-            <li
-              key={task.id}
-              className="bg-white p-4 rounded shadow hover:shadow-lg transition-shadow"
-            >
-              <h2 className="text-xl font-semibold mb-2">{task.title}</h2>
-              <p className="text-gray-700 text-sm mb-4">{task.content}</p>
-              <p className="text-xs text-gray-500">
-                <strong>Type:</strong> {task.postType}
-              </p>
-              <p className="text-xs text-gray-500">
-                <strong>Created:</strong>{" "}
-                {new Date(task.createdAt).toLocaleDateString()}
-              </p>
-
-              <Link
-                href={`/tasks/${task.id}?action=view`}
-                className="text-blue-500 hover:underline text-sm"
-              >
-                View Details
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
+      </main>
     </div>
   );
 };

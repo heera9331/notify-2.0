@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 import "react-markdown-editor-lite/lib/index.css";
 
 interface TaskProps {
-  id?: 0;
+  id?: number;
   title: string;
   content: string;
   postType: string;

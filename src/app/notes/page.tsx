@@ -5,9 +5,20 @@ import { Note } from "@prisma/client";
 import { axios } from "@/lib/axios";
 import Link from "next/link";
 import { useNotes } from "@/hooks/use-notes";
+import { Trash, Trash2 } from "lucide-react";
 
 const Page = () => {
-  const { notes } = useNotes();
+  const { notes, deleteNote } = useNotes();
+
+  const handleDelete = async (id: number) => {
+    try {
+      const response = await deleteNote(id);
+      const data = response.data;
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="min-h-screen p-6 bg-gray-100">
@@ -42,12 +53,20 @@ const Page = () => {
                   ? `${note.content.slice(0, 100)}...`
                   : note.content}
               </p>
-              <Link
-                href={`/notes/${note.id}?action=view`}
-                className="text-blue-500 hover:underline text-sm"
-              >
-                View Details
-              </Link>
+              <div className="flex justify-between items-center">
+                <Link
+                  href={`/notes/${note.id}?action=view`}
+                  className="text-blue-500 hover:underline text-sm"
+                >
+                  View Details
+                </Link>
+                <Trash2
+                  className="cursor-pointer w-4 h-4 text-red-600"
+                  onClick={() => {
+                    handleDelete(note.id);
+                  }}
+                />
+              </div>
             </div>
           ))}
         </div>

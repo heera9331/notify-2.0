@@ -67,7 +67,7 @@ const DELETE = async (
   const { id } = params;
 
   try {
-    const deletedTask = await prisma.post.delete({
+    const deletedTask = await prisma.task.delete({
       where: { id: Number(id) },
     });
 

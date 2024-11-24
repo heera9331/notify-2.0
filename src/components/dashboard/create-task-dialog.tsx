@@ -1,56 +1,67 @@
 "use client";
 
-import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useState, FormEvent } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { CalendarIcon, Loader2, Plus } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useTasks } from "@/hooks/use-tasks";
+
+interface Task {
+  title: string;
+  content: string;
+  priority: number;
+  dueDate: string; // ISO string format
+  status: "TODO" | "IN_PROGRESS" | "DONE";
+  userId: number;
+}
 
 export function CreateTaskDialog() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [date, setDate] = useState<Date>();
-  const [task, setTask] = useState({
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const { addTask } = useTasks();
+
+  const [task, setTask] = useState<Task>({
     title: "",
-    description: "",
-    priority: "MEDIUM",
-    dueDate: "",
+    content: "",
+    priority: 0,
+    dueDate: new Date().toISOString(),
     status: "TODO",
+    userId: 4,
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const response = await fetch("/api/tasks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...task,
-          dueDate: date?.toISOString(),
-          userId: 4,
-        }),
-      });
-
-      if (response.ok) {
-        setOpen(false);
-        setTask({
-          title: "",
-          description: "",
-          priority: "MEDIUM",
-          dueDate: "",
-          status: "TODO",
-        });
-        setDate(undefined);
-      }
+      const response = await addTask({task}); // Assuming `addTask` accepts a Task object directly
+      console.log("Task created successfully:", response);
+      setOpen(false);
     } catch (error) {
       console.error("Failed to create task:", error);
     } finally {
@@ -70,6 +81,7 @@ export function CreateTaskDialog() {
           <DialogTitle>Create New Task</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Title Input */}
           <div className="space-y-2">
             <Label htmlFor="title">Title</Label>
             <Input
@@ -80,34 +92,41 @@ export function CreateTaskDialog() {
               required
             />
           </div>
-          
+
+          {/* Description Input */}
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
             <Textarea
               id="description"
-              value={task.description}
-              onChange={(e) => setTask({ ...task, description: e.target.value })}
+              value={task.content}
+              onChange={(e) => setTask({ ...task, content: e.target.value })}
               placeholder="Enter task description"
             />
           </div>
 
+          {/* Priority Select */}
           <div className="space-y-2">
             <Label htmlFor="priority">Priority</Label>
             <Select
-              value={task.priority}
-              onValueChange={(value: any) => setTask({ ...task, priority: value })}
+              value={task.priority.toString()}
+              onValueChange={(value) =>
+                setTask({ ...task, priority: parseInt(value, 10) })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select priority" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="LOW">Low</SelectItem>
-                <SelectItem value="MEDIUM">Medium</SelectItem>
-                <SelectItem value="HIGH">High</SelectItem>
+                {[...Array(10).keys()].map((n) => (
+                  <SelectItem key={n + 1} value={(n + 1).toString()}>
+                    {n + 1}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
 
+          {/* Due Date Picker */}
           <div className="space-y-2">
             <Label>Due Date</Label>
             <Popover>
@@ -127,13 +146,22 @@ export function CreateTaskDialog() {
                 <Calendar
                   mode="single"
                   selected={date}
-                  onSelect={setDate}
+                  onSelect={(selectedDate) => {
+                    setDate(selectedDate);
+                    setTask({
+                      ...task,
+                      dueDate: selectedDate
+                        ? selectedDate.toISOString()
+                        : new Date().toISOString(),
+                    });
+                  }}
                   initialFocus
                 />
               </PopoverContent>
             </Popover>
           </div>
 
+          {/* Submit Button */}
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? (
               <>
