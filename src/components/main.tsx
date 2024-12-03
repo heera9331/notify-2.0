@@ -1,9 +1,15 @@
 "use client";
 import { UserProvider } from "@/contexts/user-context";
 import { ReactNode } from "react";
-const Main = ({ children }: { children: ReactNode }) => {
+const Main = ({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) => {
   return (
-    <main className="w-4/5">
+    <main className={className}>
       <UserProvider>{children}</UserProvider>
     </main>
   );

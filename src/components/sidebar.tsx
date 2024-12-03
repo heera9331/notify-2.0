@@ -5,7 +5,16 @@ import {
   CollapsibleTrigger,
   CollapsibleContent,
 } from "@radix-ui/react-collapsible";
-import { Plus, Notebook, ChevronDown, Home, Calendar, Inbox, Search, Settings } from "lucide-react";
+import {
+  Plus,
+  Notebook,
+  ChevronDown,
+  Home,
+  Calendar,
+  Inbox,
+  Search,
+  Settings,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -19,6 +28,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "./ui/sidebar";
+import { FormCreateNoteType } from "./form-create-note-type";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 // Menu items.
 const items = [
@@ -28,7 +45,7 @@ const items = [
   { title: "Calendar", url: "#", icon: Calendar },
   { title: "Search", url: "#", icon: Search },
   { title: "Settings", url: "#", icon: Settings },
-  { title: "Logout", url: "/", icon: Settings },
+  { title: "Logout", url: "/auth", icon: Settings },
 ];
 
 const MainSidebar = () => {
@@ -36,14 +53,21 @@ const MainSidebar = () => {
     <SidebarProvider>
       <Sidebar
         side="left"
-        className="relative w-full border-none  bg-gray-50   min-h-fit-content  p-4 rounded shadow hover:shadow-lg transition-shadow delay-200"
+        className="relative border-none  bg-gray-50   min-h-fit-content  p-4 rounded shadow hover:shadow-lg transition-shadow delay-200"
       >
         <SidebarContent>
           {/* Application Group */}
           <SidebarGroup>
             <SidebarGroupLabel>Application</SidebarGroupLabel>
             <SidebarGroupAction>
-              <Plus /> <span className="sr-only">Add Project</span>
+              <Dialog>
+                <DialogTrigger>
+                  <Plus /> <span className="sr-only">Add Project</span>
+                </DialogTrigger>
+                <DialogContent>
+                  <FormCreateNoteType />
+                </DialogContent>
+              </Dialog>
             </SidebarGroupAction>
             <SidebarGroupContent />
           </SidebarGroup>
