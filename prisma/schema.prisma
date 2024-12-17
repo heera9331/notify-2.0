@@ -81,11 +81,15 @@ enum PostType {
 }
 
 model Category {
-  id          Int      @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   title       String
   description String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  parentId    Int?       // Allow NULL for optional parent ID
+  parent      Category?  @relation("CategoryParent", fields: [parentId], references: [id], onDelete: SetNull)
+  children    Category[] @relation("CategoryParent")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Comment {

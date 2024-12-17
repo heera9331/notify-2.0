@@ -41,6 +41,8 @@ const POST = async (req: NextRequest) => {
       { expiresIn: "1h" } // Token expires in 1 hour
     );
 
+    
+
     // Remove the password from the user object before sending response
     const { password: _, ...userWithoutPassword } = user;
 

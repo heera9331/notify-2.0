@@ -22,6 +22,8 @@ import { TaskList } from "@/components/dashboard/task-list";
 import { useTasks } from "@/hooks/use-tasks";
 import { usePosts } from "@/hooks/use-posts";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { CreateTypeForm } from "@/components/create-type-form";
+import { FormCreateNoteType } from "@/components/form-create-note-type";
 // "TODO" | "IN_PROGRESS" | "DONE";
 
 export default function Home() {
@@ -56,7 +58,12 @@ export default function Home() {
       icon: CheckCircle2,
       color: "text-green-500",
     },
-    { label: "In Progress", value: taskStats.inProgess, icon: Clock, color: "text-blue-500" },
+    {
+      label: "In Progress",
+      value: taskStats.inProgess,
+      icon: Clock,
+      color: "text-blue-500",
+    },
     {
       label: "Todo",
       value: taskStats.inProgess,
@@ -76,13 +83,13 @@ export default function Home() {
           </div>
           <CreateTaskDialog />
         </div>
-      </header>
-
+      </header> 
+      
       <main className="max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 grid gap-6">
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {stats.map((stat, index) => (
-            <StatsCard key={index} {...stat} />
+            <StatsCard key={index}  value="0"{...stat} />
           ))}
         </div>
 

@@ -3,22 +3,25 @@ import { useState } from "react";
 import MarkdownEditor from "react-markdown-editor-lite";
 import ReactMarkdown from "react-markdown";
 import "react-markdown-editor-lite/lib/index.css";
+import { useUser } from "@/contexts/user-context";
 
 interface TaskProps {
   id?: number;
   title: string;
   content: string;
   postType: string;
-  userId: number;
+  userId: string;
 }
 
 const CreatePostForm = ({ intialTask }: TaskProps) => {
+  const { user } = useUser();
+  
   const [post, setPost] = useState(
     intialTask || {
       title: "",
       content: "",
       postType: "POST", // Default to POST
-      userId: 4, // This should be dynamically set based on the logged-in user
+      userId: user?.id, // This should be dynamically set based on the logged-in user
     }
   );
 
@@ -59,7 +62,7 @@ const CreatePostForm = ({ intialTask }: TaskProps) => {
           title: "",
           content: "",
           postType: "TASK",
-          userId: 4, // Reset userId if necessary
+          userId: user?.id, // Reset userId if necessary
         });
         console.log("Created Post:", data);
       } else {

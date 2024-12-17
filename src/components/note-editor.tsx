@@ -1,5 +1,5 @@
 "use client";
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import EditorJS from "@editorjs/editorjs";
 import Header from "@editorjs/header";
 import List from "@editorjs/list";
@@ -13,14 +13,10 @@ import Delimiter from "@editorjs/delimiter";
 import Quote from "@editorjs/quote";
 import Checklist from "@editorjs/checklist";
 import { Card } from "./ui/card";
-import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-// import { useToast } from "@/hooks/use-toast";
 import { Loader2, Save } from "lucide-react";
 import axios from "axios";
-import "@/app/globals.css";
-import css from "styled-jsx/css";
-import { useSearchParams } from "next/navigation";
+import { useUser } from "@/contexts/user-context";
 
 const EDITOR_HOLDER_ID = "editorjs-container";
 
@@ -34,19 +30,13 @@ interface NoteProps {
   };
 }
 
-const NoteEditor = ({ id: number, initialNote }: NoteProps) => {
-  // const { toast } = useToast();
+const NoteEditor = ({ id, initialNote }: NoteProps) => {
   const editorInstance = useRef<EditorJS | null>(null);
+  const { user } = useUser();
 
   const [note, setNote] = useState(
-    initialNote || {
-      id: 0,
-      title: "Post title",
-      content: "{}",
-      userId: 4,
-    }
+    initialNote || { id: 0, title: "Post title", content: "{}", userId: 4 }
   );
-
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -56,76 +46,41 @@ const NoteEditor = ({ id: number, initialNote }: NoteProps) => {
   }, [initialNote]);
 
   useEffect(() => {
-    if (!editorInstance.current) {
-      initializeEditor();
-    }
+    initializeEditor();
 
     return () => {
       if (editorInstance.current) {
+        // editorInstance.current.destroy(); // Destroy instance to avoid memory leaks
         editorInstance.current = null;
       }
     };
-  }, []);
+  }, []); // Reinitialize the editor if note.content changes
 
   const initializeEditor = () => {
+    if (editorInstance.current) {
+      editorInstance.current.destroy(); // Destroy the previous instance
+    }
+
     const editor = new EditorJS({
       holder: EDITOR_HOLDER_ID,
       tools: {
-        header: {
-          class: Header,
-          config: {
-            levels: [1, 2, 3],
-            defaultLevel: 2,
-          },
-        },
-        paragraph: {
-          class: Paragraph,
-          inlineToolbar: true,
-        },
-        list: {
-          class: List,
-          inlineToolbar: true,
-          config: {
-            defaultStyle: "unordered",
-          },
-        },
-        checklist: {
-          class: Checklist,
-          inlineToolbar: true,
-        },
-        table: {
-          class: Table,
-          inlineToolbar: true,
-        },
-        code: {
-          class: Code,
-        },
+        header: Header,
+        paragraph: Paragraph,
+        list: List,
+        checklist: Checklist,
+        table: Table,
+        code: Code,
         inlineCode: InlineCode,
-        quote: {
-          class: Quote,
-          inlineToolbar: true,
-        },
-        marker: {
-          class: Marker,
-          shortcut: "CMD+SHIFT+M",
-        },
+        quote: Quote,
+        marker: Marker,
         delimiter: Delimiter,
-        embed: {
-          class: Embed,
-          config: {
-            services: {
-              youtube: true,
-              codesandbox: true,
-              codepen: true,
-            },
-          },
-        },
+        embed: Embed,
       },
       placeholder: "Press '/' for commands...",
       data: note.content ? JSON.parse(note.content) : undefined,
       onChange: async () => {
         const savedData = await editor.save();
-        setNote((prev: any) => ({
+        setNote((prev) => ({
           ...prev,
           content: JSON.stringify(savedData),
         }));
@@ -136,24 +91,18 @@ const NoteEditor = ({ id: number, initialNote }: NoteProps) => {
   };
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNote({
-      ...note,
-      title: e.target.value,
-    });
+    setNote({ ...note, title: e.target.value });
   };
 
   const saveNote = async () => {
     setLoading(true);
     try {
-      const data = JSON.parse(note.content ?? "");
-
-      let payload = {
+      const data = JSON.parse(note.content ?? "{}");
+      const payload = {
         title: note.title,
         content: data,
-        userId: 4,
+        userId: user?.id ?? 0,
       };
-
-      console.log(payload);
 
       const response = await axios({
         method: note.id ? "put" : "post",
@@ -161,21 +110,9 @@ const NoteEditor = ({ id: number, initialNote }: NoteProps) => {
         data: payload,
       });
 
-      console.log(response);
-
-      if (response.status === 200 || response.status === 201) {
-        // toast({
-        //   title: "Success",
-        //   description: "Note saved successfully",
-        // });
-      }
+      console.log("Saved note:", response.data);
     } catch (err) {
-      console.log(err);
-      // toast({
-      //   variant: "destructive",
-      //   title: "Error",
-      //   description: "Failed to save note",
-      // });
+      console.error("Error saving note:", err);
     } finally {
       setLoading(false);
     }
@@ -194,11 +131,10 @@ const NoteEditor = ({ id: number, initialNote }: NoteProps) => {
         </Button>
       </div>
 
-      <Card className="flex justify-center flex-col gap-2 items-center bg-gray-50 border-none shadow-none hover:shadow-none py-14 max-w-[900px]">
+      <Card className="flex justify-center flex-col gap-2 items-center bg-gray-50 border-none shadow-none py-14 max-w-[900px]">
         <input
           type="text"
           value={note.title}
-          name="title"
           onChange={handleTitleChange}
           className="w-[80%] py-2 px-4 bg-gray-50 text-3xl font-bold active:focus:bg-white"
           placeholder="Set note title"

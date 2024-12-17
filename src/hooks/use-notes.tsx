@@ -11,6 +11,7 @@ export function useNotes() {
     if (storedNotes) {
       setNotes(JSON.parse(storedNotes));
     } else {
+      localStorage.removeItem("notes");
       fetchNotes();
     }
   }, []);

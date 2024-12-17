@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, {
   createContext,
   useContext,
@@ -8,7 +8,13 @@ import React, {
 } from "react";
 import { User, Post } from "@prisma/client";
 import { axios } from "@/lib/axios";
+
 const UserContext = createContext<UserContextType | undefined>(undefined);
+
+interface Category {
+  title: string;
+  description: string;
+}
 
 export const UserProvider: React.FC<{ children: ReactNode }> = ({
   children,
@@ -18,6 +24,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   const [posts, setPosts] = useState<Post[]>([]);
   const [tasks, setTasks] = useState<Post[]>([]);
   const [notes, setNotes] = useState<Post[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -37,12 +44,23 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     // getAllBoards();
+    getCategories();
     getPosts();
   }, []);
 
+  const getCategories = async () => {
+    try {
+      const response = await axios.get("/api/categories");
+      const categories: Category[] = response.data;
+      console.log(categories);
+      localStorage.setItem("categories", JSON.stringify(categories));
+      setCategories(categories);
+    } catch (error) {}
+  };
+
   const getAllBoards = async () => {
     try {
-      const resposne = await axios.get("/board");
+      const resposne = await axios.get("/api/board");
       setBoards(resposne.data);
     } catch (error) {
       console.log(error);
@@ -55,9 +73,9 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
       setPosts(resposne.data);
       setPosts(resposne.data);
       setNotes(resposne.data);
-      setTasks(resposne.data);
+      // setTasks(resposne.data);
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   };
 
@@ -70,6 +88,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
         posts,
         boards,
         notes,
+        categories,
       }}
     >
       {children}
@@ -104,4 +123,5 @@ interface UserContextType {
   posts: Post[];
   notes: Post[];
   boards: Board[];
+  categories: Category[];
 }

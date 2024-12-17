@@ -13,7 +13,7 @@ export function useTasks() {
     } else {
       fetchTasks();
     }
-  }, [tasks]);
+  }, []);
 
   const fetchTasks = async () => {
     try {

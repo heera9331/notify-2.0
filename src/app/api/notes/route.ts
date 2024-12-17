@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 export const POST = async (req: NextRequest) => {
   try {
     const { title, content, parentId, userId, isPublic, category } =
-      await req.json();
+      await req.json(); 
 
     console.log(title, content);
 

@@ -22,6 +22,9 @@ const POST = async (req: NextRequest) => {
   try {
     const { title, content, userId, status, dueDate } = await req.json();
 
+    console.log("tasks data > ");
+    console.log({ title, content, userId, status, dueDate });
+
     if (!title || !userId) {
       return NextResponse.json(
         { error: "title and userId missing" },

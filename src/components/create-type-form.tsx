@@ -5,12 +5,14 @@ import { Form, FormSubmitHandler } from "react-hook-form";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
+import { useUser } from "@/contexts/user-context";
 
 const CreateTypeForm = ({ title }: { title?: string }) => {
   const [cardTitle, setCardTitle] = useState(title ?? "Create post type");
   const [typeName, setType] = useState("");
   const [slug, setSlug] = useState("");
-
+  const { categories } = useUser();
+  
   return (
     <Card className="">
       <CardContent>

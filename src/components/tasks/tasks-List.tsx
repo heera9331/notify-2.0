@@ -9,7 +9,7 @@ const TaskList = ({ tasks = [] }: { tasks: Task[] }) => {
 
   const handleDelete = async (id: number) => {
     console.log("delte the task");
-    
+
     try {
       const response = await deleteTask(id);
       console.log(response);
@@ -30,9 +30,7 @@ const TaskList = ({ tasks = [] }: { tasks: Task[] }) => {
             >
               <h2 className="text-xl font-semibold mb-2">{task.title}</h2>
               <p className="text-gray-700 text-sm mb-4">{task.content}</p>
-              <p className="text-xs text-gray-500 pb-2">
-                <strong>Type:</strong> {task.category}
-              </p>
+
               <p className="text-xs text-gray-500">
                 <strong>Created:</strong>
                 {new Date(task.createdAt).toLocaleDateString()}

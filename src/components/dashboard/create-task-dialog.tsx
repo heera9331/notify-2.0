@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -29,6 +29,7 @@ import { CalendarIcon, Loader2, Plus } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useTasks } from "@/hooks/use-tasks";
+import { useUser } from "@/contexts/user-context";
 
 interface Task {
   title: string;
@@ -44,6 +45,7 @@ export function CreateTaskDialog() {
   const [loading, setLoading] = useState(false);
   const [date, setDate] = useState<Date | undefined>(new Date());
   const { addTask } = useTasks();
+  const { user } = useUser();
 
   const [task, setTask] = useState<Task>({
     title: "",
@@ -51,15 +53,20 @@ export function CreateTaskDialog() {
     priority: 0,
     dueDate: new Date().toISOString(),
     status: "TODO",
-    userId: 4,
+    userId: 0,
   });
+
+  useEffect(() => {
+    setTask({ ...task, userId: user?.id ?? 0 });
+  }, [user]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const response = await addTask({task}); // Assuming `addTask` accepts a Task object directly
+      setTask({...task, userId: user?.id ?? 0});
+      const response = await addTask({ task }); // Assuming `addTask` accepts a Task object directly
       console.log("Task created successfully:", response);
       setOpen(false);
     } catch (error) {

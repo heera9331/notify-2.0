@@ -33,3 +33,4 @@ npx prisma generate
 - todo create category form
 - remove home error infinity render element
 - add category option
+- render content
