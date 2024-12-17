@@ -2,10 +2,12 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import { errorLog } from "@/utils/errorLog";
 
 const SECRET_KEY = process.env.JWT_SECRET_KEY || "";
 
 const POST = async (req: NextRequest) => {
+  errorLog("this is samle data");
   try {
     const { username, password } = await req.json();
 
@@ -40,8 +42,6 @@ const POST = async (req: NextRequest) => {
       SECRET_KEY,
       { expiresIn: "1h" } // Token expires in 1 hour
     );
-
-    
 
     // Remove the password from the user object before sending response
     const { password: _, ...userWithoutPassword } = user;

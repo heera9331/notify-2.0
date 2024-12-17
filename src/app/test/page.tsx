@@ -1,15 +1,50 @@
-import { CreateTypeForm } from "@/components/create-type-form";
-const TestPage = () => {
+"use client";
+
+import { useState } from "react";
+
+const FileUpload = () => {
+  const [file, setFile] = useState(null);
+  const [message, setMessage] = useState("");
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleUpload = async () => {
+    if (!file) {
+      setMessage("Please select a file to upload.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setMessage(`File uploaded successfully: ${result.fileName}`);
+      } else {
+        setMessage("Failed to upload file.");
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      setMessage("An error occurred while uploading the file.");
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="container mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Tasks</h1>
-        <div className="test-page">
-          <CreateTypeForm />
-        </div>
-      </div>
+    <div className="upload-container">
+      <input type="file" onChange={handleFileChange} />
+      <button onClick={handleUpload}>Upload</button>
+      {message && <p>{message}</p>}
     </div>
   );
 };
 
-export default TestPage;
+export default FileUpload;
