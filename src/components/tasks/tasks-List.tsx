@@ -29,7 +29,11 @@ const TaskList = ({ tasks = [] }: { tasks: Task[] }) => {
               className="bg-white p-4 rounded shadow hover:shadow-lg transition-shadow"
             >
               <h2 className="text-xl font-semibold mb-2">{task.title}</h2>
-              <p className="text-gray-700 text-sm mb-4">{task.content}</p>
+              <p className="text-gray-700 text-sm mb-4">
+                {task.content.length < 200
+                  ? task.content
+                  : task.content.slice(200)}
+              </p>
 
               <p className="text-xs text-gray-500">
                 <strong>Created:</strong>

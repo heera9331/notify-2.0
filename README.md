@@ -46,3 +46,6 @@ npx prisma generate
 - calendar
 - email
 - handle file system
+- add debug feature in settings
+- add pages
+  - home

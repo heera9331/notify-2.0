@@ -1,7 +1,7 @@
 "use client";
 import MainSidebar from "@/components/sidebar";
 import type { Metadata } from "next";
-import "./globals.css";
+import "../globals.css";
 import { UserProvider, useUser } from "@/contexts/user-context";
 import Main from "@/components/main";
 
@@ -23,7 +23,7 @@ export default function RootLayout({
             </Main>
           </div>
           {/* Footer */}
-          <footer className="text-center text-gray-500 mt-4">
+          <footer className="text-center text-gray-500 my-4">
             Designed by Heera Singh
           </footer>
         </UserProvider>

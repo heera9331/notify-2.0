@@ -79,7 +79,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-2">
             <LayoutDashboard className="h-6 w-6 text-blue-500" />
-            <h1 className="text-xl font-semibold">Task Dashboard</h1>
+            <h1 className="text-xl font-semibold">Dashboard</h1>
           </div>
           <CreateTaskDialog />
         </div>
@@ -89,7 +89,7 @@ export default function Home() {
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {stats.map((stat, index) => (
-            <StatsCard key={index}  value="0"{...stat} />
+            <StatsCard key={index} {...stat} />
           ))}
         </div>
 

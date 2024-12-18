@@ -7,7 +7,7 @@ import SignUpForm from "@/components/SignUpForm";
 
 export default function AuthPage() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] justify-items-center min-h-screen gap-16">
+    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-center min-h-screen gap-16">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         <Tabs
           defaultValue="signin"
