@@ -4,11 +4,23 @@ import { NextRequest, NextResponse } from "next/server";
 
 const GET = async (req: NextRequest) => {
   try {
-    const categories = await prisma.category.findMany({});
+    // Fetch categories with their subcategories (children)
+    const categories = await prisma.category.findMany({
+      where: {
+        parentId: null, // Fetch only top-level categories
+      },
+      include: {
+        children: true, // Include subcategories recursively
+      },
+    });
+
     return NextResponse.json(categories);
   } catch (error: any) {
-    console.log(error.message);
-    return NextResponse.json({ error: error.message });
+    console.error("Error fetching categories:", error.message);
+    return NextResponse.json(
+      { error: "Failed to fetch categories" },
+      { status: 500 }
+    );
   }
 };
 
@@ -29,10 +41,11 @@ const POST = async (req: NextRequest) => {
       data: {
         title,
         description: description ?? "",
+        parentId,
       },
     });
 
-    return NextResponse.json({ note: newCategory }, { status: 201 });
+    return NextResponse.json({ category: newCategory }, { status: 201 });
   } catch (error) {
     console.error("Error creating note:", error);
     return NextResponse.json(

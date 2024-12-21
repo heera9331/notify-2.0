@@ -158,7 +158,9 @@ export default function LandingPage() {
           Sign up today and transform how your team works.
         </p>
         <button className="bg-white text-gray-900 px-6 py-3 rounded-md text-lg hover:bg-gray-300 transition">
+          <Link href="/auto">
           Get Started Now
+          </Link>
         </button>
       </section>
 

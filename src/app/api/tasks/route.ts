@@ -7,6 +7,9 @@ const GET = async (req: NextRequest) => {
       orderBy: {
         createdAt: "desc",
       },
+      where: {
+        parentId: 0
+      }
     });
     return NextResponse.json(tasks);
   } catch (error) {

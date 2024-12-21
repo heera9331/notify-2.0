@@ -18,6 +18,18 @@ import { Loader2, Save } from "lucide-react";
 import axios from "axios";
 import { useUser } from "@/contexts/user-context";
 
+import { Label } from "./ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import { title } from "process";
+import { Input } from "./ui/input";
+
 const EDITOR_HOLDER_ID = "editorjs-container";
 
 interface NoteProps {
@@ -32,7 +44,8 @@ interface NoteProps {
 
 const NoteEditor = ({ id, initialNote }: NoteProps) => {
   const editorInstance = useRef<EditorJS | null>(null);
-  const { user } = useUser();
+  const { user, categories } = useUser();
+  const [category, setCategory] = useState<number | null>(null);
 
   const [note, setNote] = useState(
     initialNote || { id: 0, title: "Post title", content: "{}", userId: 4 }
@@ -102,6 +115,7 @@ const NoteEditor = ({ id, initialNote }: NoteProps) => {
         title: note.title,
         content: data,
         userId: user?.id ?? 0,
+        category,
       };
 
       const response = await axios({
@@ -120,7 +134,7 @@ const NoteEditor = ({ id, initialNote }: NoteProps) => {
 
   return (
     <>
-      <div className="flex justify-start mb-4">
+      <div className="w-full flex justify-start mb-4">
         <Button onClick={saveNote} disabled={loading} className="gap-2">
           {loading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -131,21 +145,67 @@ const NoteEditor = ({ id, initialNote }: NoteProps) => {
         </Button>
       </div>
 
-      <Card className="flex justify-center flex-col gap-2 items-center bg-gray-50 border-none shadow-none py-14 max-w-[900px]">
-        <input
-          type="text"
-          value={note.title}
-          onChange={handleTitleChange}
-          className="w-[80%] py-2 px-4 bg-gray-50 text-3xl font-bold active:focus:bg-white"
-          placeholder="Set note title"
-        />
-        <div className="w-[80%]">
-          <div
-            id={EDITOR_HOLDER_ID}
-            className="prose prose-stone dark:prose-invert max-w-none"
+      <div className="flex w-full gap-4">
+        <Card className="w-3/4 flex justify-center flex-col gap-2 items-center bg-white border-none shadow-none py-14 max-w-[900px]">
+          <input
+            type="text"
+            value={note.title}
+            onChange={handleTitleChange}
+            className="w-[80%] py-2 px-4 bg-gray-50 text-3xl font-bold active:focus:bg-white"
+            placeholder="Set note title"
           />
+          <div className="w-[80%]">
+            <div
+              id={EDITOR_HOLDER_ID}
+              className="prose prose-stone dark:prose-invert max-w-none"
+            />
+          </div>
+        </Card>
+
+        <div className="w-1/4 flex flex-col gap-4">
+          <Card className=" bg-white">
+            <div className="flex flex-col gap-2 min-h-[124px]">
+              <Label className="font-semibold text-xl">Featured Image</Label>
+              <Input type="file" name="featured_image" />
+              <Button className="bg-gray-800 text-white">Save</Button>
+            </div>
+          </Card>
+
+          <Card className=" bg-white">
+            <div className="flex flex-col gap-2">
+              <Label className="font-semibold text-xl">
+                Select Note Category
+              </Label>
+              <Select
+                value={category?.toString() || ""}
+                onValueChange={(value) => setCategory(parseInt(value))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Parent Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">None</SelectItem>
+                  {categories.map((category: any) => (
+                    <SelectItem
+                      value={category.id.toString()}
+                      key={category.id}
+                    >
+                      {category.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </Card>
+
+          <Card className=" bg-white">
+            <div className="flex flex-col gap-2">
+              <Label className="font-semibold text-xl">Publish</Label>
+              <Button className="bg-gray-800 text-white">Publish</Button>
+            </div>
+          </Card>
         </div>
-      </Card>
+      </div>
     </>
   );
 };

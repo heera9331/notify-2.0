@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 export const POST = async (req: NextRequest) => {
   try {
     const { title, content, parentId, userId, isPublic, category } =
-      await req.json(); 
+      await req.json();
 
     console.log(title, content);
 
@@ -21,6 +21,7 @@ export const POST = async (req: NextRequest) => {
         content: JSON.stringify(content),
         userId: Number(userId),
         isPublic: Boolean(isPublic),
+        category: category.toString(),
       },
     });
 
@@ -34,14 +35,32 @@ export const POST = async (req: NextRequest) => {
   }
 };
 
-export const GET = async () => {
+export const GET = async (req: NextRequest) => {
   try {
-    // Fetch all notes
+    const params = req.nextUrl.searchParams;
+    const s = params.get("s") ?? "";
+    const category = params.get("category")
+      ? Number(params.get("category"))
+      : null;
+    const page = Math.max(Number(params.get("page")) || 1, 1);
+    const limit = Math.max(Number(params.get("limit")) || 10, 1);
+
+    // Fetch notes with optional filtering by category
     const notes = await prisma.note.findMany({
+      where: {
+        ...(category && { category: category.toString() }),
+        ...(s && {
+          OR: [{ title: { contains: s } }, { content: { contains: s } }],
+        }),
+      },
       orderBy: {
         createdAt: "desc",
       },
+      skip: (page - 1) * limit,
+      take: limit,
     });
+
+    // Return notes
     return NextResponse.json(notes, { status: 200 });
   } catch (error) {
     console.error("Error fetching notes:", error);

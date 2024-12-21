@@ -12,13 +12,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="min-w-full">
+      <body className="min-w-full ">
         <UserProvider>
           <div className="flex overflow-hidden">
             {/* Sidebar  */}
             {localStorage.getItem("user") && <MainSidebar />}
             {/* Main Content */}
-            <Main className="flex-grow min-w-[calc(100% - var(--sidebar-width))]">
+            <Main className="flex-grow min-w-[calc(100% - var(--sidebar-width))] bg-gray-100">
               {children}
             </Main>
           </div>

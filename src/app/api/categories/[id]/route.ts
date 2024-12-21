@@ -1,23 +1,40 @@
-import { axios } from "@/lib/axios";
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-interface getParams {
-  id: string;
+// Define a type for request params
+interface GetParams {
+  params: {
+    id: string;
+  };
 }
 
-const GET = async (req: NextRequest, params: getParams) => {
+// GET endpoint to fetch children of a category
+const GET = async (
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) => {
   try {
-    const category = params.id ?? 0;
+    const parentId = parseInt(params.id);
+    console.log(parentId);
+    if (isNaN(parentId)) {
+      return NextResponse.json({ error: "Invalid parentId" }, { status: 400 });
+    }
 
-    return NextResponse.json({ category });
+    const subcategories = await prisma.category.findMany({
+      where: { parentId },
+    });
+
+    return NextResponse.json({ categories: subcategories });
   } catch (error: any) {
-    console.log(error.message);
-    return NextResponse.json({ error: error.message });
+    console.error(error.message);
+    return NextResponse.json(
+      { error: "Failed to fetch subcategories" },
+      { status: 500 }
+    );
   }
 };
 
-const PUT = async (req: NextRequest, params: getParams) => {
+const PUT = async (req: NextRequest, params: any) => {
   try {
     const id = parseInt(params.id);
 
@@ -72,3 +89,4 @@ const POST = async (req: NextRequest) => {
 };
 
 export { GET, POST, PUT };
+

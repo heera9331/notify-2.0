@@ -6,19 +6,19 @@ import { axios } from "@/lib/axios";
 import NoteEditor from "@/components/note-editor";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter, useParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { useNotes } from "@/hooks/use-notes";
 
-const Page = ({ params }: { params: { id: string } }) => {
+const Page = () => {
+  const { id } = useParams;
   const [note, setNote] = useState<Note | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const action = searchParams?.get("action") || "view"; // Get the action from the query
-  const router = useRouter();
+
   const { getNote } = useNotes();
-  const { id }: { id: string } = use(params);
 
   useEffect(() => {
     if (id) {
@@ -34,7 +34,7 @@ const Page = ({ params }: { params: { id: string } }) => {
 
   return (
     <div className="min-h-screen p-6 bg-gray-100">
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen">
         <NoteEditor initialNote={note} id={Number(id)} />
       </div>
     </div>

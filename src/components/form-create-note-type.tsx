@@ -21,13 +21,14 @@ const FormCreateNoteType = ({ title = "List" }: { title?: string }) => {
   const [message, setMessage] = useState("");
   const { categories } = useUser(); // Fetch categories from user context
   console.log(categories);
+  
   const handleSubmit = async (ev: FormEvent) => {
     ev.preventDefault();
 
-    try {
+    try {  
       const response = await axios.post("/api/categories", {
         title: typeName,
-        parentId: parentId || 0,
+        parentId: parentId,
       });
       console.log(response);
       setMessage("Category created successfully!");

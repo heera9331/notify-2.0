@@ -25,7 +25,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon, Loader2, Plus } from "lucide-react";
+import {
+  Calendar1,
+  CalendarIcon,
+  Flame,
+  Loader2,
+  Plus,
+  Text,
+  TextSelect,
+} from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useTasks } from "@/hooks/use-tasks";
@@ -65,7 +73,7 @@ export function CreateTaskDialog() {
     setLoading(true);
 
     try {
-      setTask({...task, userId: user?.id ?? 0});
+      setTask({ ...task, userId: user?.id ?? 0 });
       const response = await addTask({ task }); // Assuming `addTask` accepts a Task object directly
       console.log("Task created successfully:", response);
       setOpen(false);
@@ -83,14 +91,19 @@ export function CreateTaskDialog() {
           <Plus className="h-4 w-4 mr-2" /> New Task
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] md:max-w-[650px]">
         <DialogHeader>
           <DialogTitle>Create New Task</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Title Input */}
           <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
+            <Label htmlFor="title" className="flex items-center mb-2">
+              <span className="pr-2">
+                <TextSelect className="w-5 h-5" />
+              </span>
+              <span className="">Title</span>
+            </Label>
             <Input
               id="title"
               value={task.title}
@@ -102,8 +115,14 @@ export function CreateTaskDialog() {
 
           {/* Description Input */}
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description" className="flex items-center mb-2">
+              <span className="pr-2">
+                <Text className="w-5 h-5" />
+              </span>
+              <span className="">Description</span>
+            </Label>
             <Textarea
+              className="min-h-[150px]"
               id="description"
               value={task.content}
               onChange={(e) => setTask({ ...task, content: e.target.value })}
@@ -113,7 +132,12 @@ export function CreateTaskDialog() {
 
           {/* Priority Select */}
           <div className="space-y-2">
-            <Label htmlFor="priority">Priority</Label>
+            <Label htmlFor="priority" className="flex items-center">
+              <span className="pr-2">
+                <Flame className="w-5 h-5" />
+              </span>
+              <span className="pr-2">Priority</span>
+            </Label>
             <Select
               value={task.priority.toString()}
               onValueChange={(value) =>
@@ -135,7 +159,12 @@ export function CreateTaskDialog() {
 
           {/* Due Date Picker */}
           <div className="space-y-2">
-            <Label>Due Date</Label>
+          <Label htmlFor="dueDate" className="flex items-center">
+              <span className="pr-2">
+                <Calendar1 className="w-5 h-5 " />
+              </span>
+              <span className="pr-2">Due Date</span>
+            </Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button

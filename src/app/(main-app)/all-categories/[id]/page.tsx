@@ -1,10 +1,13 @@
 "use client";
-
+import { CreateTaskDialog } from "@/components/dashboard/create-task-dialog";
+import { CassetteTape, LayoutDashboard } from "lucide-react";
+import React from "react";
 import { useEffect, useState } from "react";
 import { axios } from "@/lib/axios";
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
 import { useNotes } from "@/hooks/use-notes";
+import { useParams } from "next/navigation";
 
 interface Note {
   id: number;
@@ -13,23 +16,9 @@ interface Note {
 }
 
 const Page = () => {
-  const [notes, setNotes] = useState<Note[]>([]);
+  const { id } = useParams(); 
   const { deleteNote } = useNotes();
-
-  // Fetch notes
-  useEffect(() => {
-    const fetchNotes = async () => {
-      try {
-        const response = await axios.get("/api/notes");
-        setNotes(response.data);
-      } catch (error) {
-        console.error("Failed to fetch notes:", error);
-      }
-    };
-
-    fetchNotes();
-  }, []);
-
+  const [notes, setNotes] = useState<Note[]>([]);
   // Handle note deletion
   const handleDelete = async (id: number) => {
     try {
@@ -40,8 +29,22 @@ const Page = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchNotes = async () => {
+      try {
+        const response = await axios.get(`/api/notes?category=${id}&page=1`);
+        console.log(response);
+        setNotes(response.data);
+      } catch (error) {
+        console.error("Failed to fetch notes:", error);
+      }
+    };
+
+    fetchNotes();
+  }, []);
+
   return (
-    <div className="min-h-screen p-6 bg-gray-100">
+    <div className="min-h-screen p-6 ">
       {/* Header */}
       <header className="mb-4">
         <ul className="flex gap-4">

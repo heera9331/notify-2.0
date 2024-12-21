@@ -6,8 +6,7 @@ import { errorLog } from "@/utils/errorLog";
 
 const SECRET_KEY = process.env.JWT_SECRET_KEY || "";
 
-const POST = async (req: NextRequest) => {
-  errorLog("this is samle data");
+const POST = async (req: NextRequest) => { 
   try {
     const { username, password } = await req.json();
 

@@ -30,22 +30,29 @@ npx prisma generate
 
 ## Updates
 
-> [17-12-2024] sidebar fix 
+> [17-12-2024] sidebar fix
 > [17-12-2024] middleware
 > [17-12-2024] email
 > [17-12-2024] file-system
 > [17-12-2024] upload file
 
-
 ## Todos
 
-- todo create category form
-- remove home error infinity render element
-- add category option
+- todo create category form => done
+- remove home error infinity render element => done
+- add category option => done
 - render content
 - calendar
 - email
-- handle file system
-- add debug feature in settings
-- add pages
+- handle file system => done
+- add debug feature in settings => done
+- add pages => done
+
   - home
+
+- implment category delete
+
+## Issues
+
+- dynamic routing issue -> resolved
+-
