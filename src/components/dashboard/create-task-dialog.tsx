@@ -38,6 +38,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useTasks } from "@/hooks/use-tasks";
 import { useUser } from "@/contexts/user-context";
+import { toast } from "sonner";
 
 interface Task {
   title: string;
@@ -75,10 +76,11 @@ export function CreateTaskDialog() {
     try {
       setTask({ ...task, userId: user?.id ?? 0 });
       const response = await addTask({ task }); // Assuming `addTask` accepts a Task object directly
-      console.log("Task created successfully:", response);
+      toast.success("Task created successfully")
       setOpen(false);
     } catch (error) {
       console.error("Failed to create task:", error);
+      toast.success("Failed to create task")
     } finally {
       setLoading(false);
     }

@@ -3,18 +3,20 @@ import { useTasks } from "@/hooks/use-tasks";
 import { Task } from "@prisma/client";
 import { Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 const TaskList = ({ tasks = [] }: { tasks: Task[] }) => {
   const { deleteTask } = useTasks();
 
   const handleDelete = async (id: number) => {
-    console.log("delte the task");
-
     try {
       const response = await deleteTask(id);
       console.log(response);
+      toast.success("Deleted successfully");
     } catch (error) {
       console.log(error);
+      toast.success("Failed to delete task");
     }
   };
 

@@ -8,7 +8,7 @@ const GET = async (req: NextRequest) => {
         createdAt: "desc",
       },
       where: {
-        parentId: 0
+        parentId: null
       }
     });
     return NextResponse.json(tasks);

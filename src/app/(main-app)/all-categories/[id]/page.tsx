@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Trash2 } from "lucide-react";
 import { useNotes } from "@/hooks/use-notes";
 import { useParams } from "next/navigation";
+import EditorJsRenderer from "@/components/EditorJsRenderer";
 
 interface Note {
   id: number;
@@ -16,7 +17,7 @@ interface Note {
 }
 
 const Page = () => {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const { deleteNote } = useNotes();
   const [notes, setNotes] = useState<Note[]>([]);
   // Handle note deletion
@@ -41,7 +42,7 @@ const Page = () => {
     };
 
     fetchNotes();
-  }, []);
+  }, [id]);
 
   return (
     <div className="min-h-screen p-6 ">
@@ -87,11 +88,7 @@ const Page = () => {
 
               {/* Note Content */}
               <div className="text-sm text-gray-600 mb-4 overflow-hidden">
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: note.content || "No content available",
-                  }}
-                />
+                <EditorJsRenderer data={note.content} />
               </div>
 
               {/* Actions */}

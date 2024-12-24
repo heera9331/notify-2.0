@@ -1,5 +1,5 @@
 "use client";
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
 import { Card, CardContent } from "./ui/card";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -13,38 +13,68 @@ import {
 } from "@/components/ui/select";
 import { axios } from "@/lib/axios";
 import { useUser } from "@/contexts/user-context";
+import { toast } from "sonner";
 
-const FormCreateNoteType = ({ title = "List" }: { title?: string }) => {
-  const [typeName, setTypeName] = useState("");
-  const [parentId, setParentId] = useState<number | null>(null);
+interface FormProp {
+  title: string;
+  mode: "new" | "update"; // Modes: new or update
+  existingData?: { id: number; title: string; parentId: number | null }; // Existing data for update
+}
+
+const FormCreateNoteType = ({
+  title = "Category",
+  mode = "new",
+  existingData,
+}: FormProp) => {
+  const [typeName, setTypeName] = useState(existingData?.title || "");
+  const [parentId, setParentId] = useState<number | null>(
+    existingData?.parentId || null
+  );
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
   const { categories } = useUser(); // Fetch categories from user context
-  console.log(categories);
-  
+
+  useEffect(() => {
+    // Update state if existingData changes (useful for edit mode)
+    if (existingData) {
+      setTypeName(existingData.title);
+      setParentId(existingData.parentId || null);
+    }
+  }, [existingData]);
+
   const handleSubmit = async (ev: FormEvent) => {
     ev.preventDefault();
 
-    try {  
-      const response = await axios.post("/api/categories", {
-        title: typeName,
-        parentId: parentId,
-      });
-      console.log(response);
-      setMessage("Category created successfully!");
-      setTypeName(""); // Reset the type input
+    try {
+      if (mode === "update" && existingData?.id) {
+        // Update category
+        const response = await axios.put(`/api/categories/${existingData.id}`, {
+          title: typeName,
+          parentId: parentId,
+        });
+        toast.success("Category updated successfully!");
+      } else {
+        // Create new category
+        const response = await axios.post("/api/categories", {
+          title: typeName,
+          parentId: parentId,
+        });
+        toast.success("Category created successfully!");
+      }
+      setTypeName(""); // Reset the input
       setParentId(0); // Reset the parent selection
       setError("");
     } catch (error: any) {
       console.error(error);
-      setError("Something went wrong while creating the category.");
+      toast.error("Something went wrong.");
     }
   };
 
   return (
     <Card>
       <CardContent>
-        <h2 className="text-2xl font-semibold">{title} Form</h2>
+        <h2 className="text-2xl font-semibold">
+          {mode === "update" ? `Update ${title}` : `Create ${title}`} Form
+        </h2>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 pt-4">
           {/* Parent Category Selector */}
@@ -70,25 +100,21 @@ const FormCreateNoteType = ({ title = "List" }: { title?: string }) => {
 
           {/* Type Name Input */}
           <div className="flex flex-col gap-2">
-            <Label className="font-semibold">{title} Type</Label>
+            <Label className="font-semibold">{title} Name</Label>
             <Input
               type="text"
-              placeholder={`Enter ${title} Type`}
+              placeholder={`Enter ${title} Name`}
               value={typeName}
-              onChange={(e) => {
-                setTypeName(e.target.value);
-                setMessage(""); // Clear success message on input change
-              }}
+              onChange={(e) => setTypeName(e.target.value)}
             />
           </div>
 
-          {/* Messages */}
-          {message && <p className="text-green-600">{message}</p>}
+          {/* Error Message */}
           {error && <p className="text-red-600">{error}</p>}
 
           {/* Submit Button */}
           <Button type="submit" className="mt-4">
-            Create
+            {mode === "update" ? "Update" : "Create"}
           </Button>
         </form>
       </CardContent>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTasks } from "@/hooks/use-tasks";
 import TaskList from "@/components/tasks/tasks-List";
 import { CreateTaskDialog } from "@/components/dashboard/create-task-dialog";
@@ -10,6 +10,8 @@ import { Layout, LayoutDashboard } from "lucide-react";
 const Page = () => {
   const [taskView, setTaskView] = useState<"list" | "kanban">("list"); // Define possible views
   const { tasks = [] } = useTasks(); // Default to an empty array to avoid errors
+
+  useEffect(() => {}, [tasks]);
 
   return (
     <div className="min-h-screen p-6 bg-gray-100">

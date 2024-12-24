@@ -66,6 +66,7 @@
 //   return { tasks, setTasks, getTask, updateTask, deleteTask, addTask };
 // }
 
+import { axios } from "@/lib/axios";
 import { useState, useEffect } from "react";
 
 interface Task {
@@ -135,9 +136,24 @@ export function useTasks() {
     }
   };
 
+  const deleteTask = async (id: number) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:3000/api/tasks/${id}`
+      );
+      const data = response.data;
+      const newTasks = tasks.filter((task) => task.id !== id);
+      setTasks(newTasks);
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch tasks:", error);
+    }
+  };
+
   return {
     tasks,
     addTask,
     updateTask,
+    deleteTask,
   };
 }

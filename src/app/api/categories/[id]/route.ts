@@ -8,54 +8,91 @@ interface GetParams {
   };
 }
 
+interface GetProps {
+  id: string;
+}
+
 // GET endpoint to fetch children of a category
-const GET = async (
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) => {
+const GET = async (req: NextRequest, params: GetProps) => {
   try {
-    const parentId = parseInt(params.id);
-    console.log(parentId);
-    if (isNaN(parentId)) {
+    const id = parseInt(params.id);
+    if (isNaN(id)) {
       return NextResponse.json({ error: "Invalid parentId" }, { status: 400 });
     }
 
-    const subcategories = await prisma.category.findMany({
-      where: { parentId },
+    const category = await prisma.category.findUnique({
+      where: { id },
     });
 
-    return NextResponse.json({ categories: subcategories });
+    return NextResponse.json({ category });
   } catch (error: any) {
     console.error(error.message);
     return NextResponse.json(
-      { error: "Failed to fetch subcategories" },
+      { error: "Failed to fetch category" },
       { status: 500 }
     );
   }
 };
 
-const PUT = async (req: NextRequest, params: any) => {
-  try {
-    const id = parseInt(params.id);
+interface PutProps {
+  params: {
+    id: string;
+  };
+}
 
-    if (!id) {
-      return NextResponse.json({ error: "id not found" }, { status: 404 });
+const PUT = async (req: NextRequest, { params }: PutProps) => {
+  try {
+    const { id } = await params;
+
+    // Ensure ID is provided and valid.
+    const parsedId = parseInt(id, 10);
+    if (isNaN(parsedId)) {
+      return NextResponse.json(
+        { error: "Invalid ID. ID must be a number." },
+        { status: 400 }
+      );
     }
 
-    const { title, description } = await req.json();
+    // Parse the JSON body.
+    const { title, description, parentId } = await req.json();
 
+    // Validate required fields.
+    // if (!title || !description) {
+    //   return NextResponse.json(
+    //     { error: "Title and description are required." },
+    //     { status: 400 }
+    //   );
+    // }
+
+    // Update the category in the database using Prisma.
     const category = await prisma.category.update({
-      where: { id },
+      where: { id: parsedId },
       data: {
         title,
         description,
+        parentId, // Assuming `parentId` is optional and nullable.
       },
     });
 
-    return NextResponse.json({ category });
+    // Return the updated category as a response.
+    return NextResponse.json({ category }, { status: 200 });
   } catch (error: any) {
-    console.log(error.message);
-    return NextResponse.json({ error: error.message });
+    console.error("Error updating category:", error);
+
+    // Handle known Prisma errors if required.
+    if (error.code === "P2025") {
+      // `P2025` refers to a Prisma "Record not found" error.
+      return NextResponse.json(
+        { error: "Category not found for the given ID." },
+        { status: 404 }
+      );
+    }
+
+    // Fallback for unhandled errors.
+    return NextResponse.json(
+      { error: error.message || "Internal Server Error" },
+      { status: 500 }
+    );
   }
 };
 
@@ -88,5 +125,29 @@ const POST = async (req: NextRequest) => {
   }
 };
 
-export { GET, POST, PUT };
+interface DeleteParams {
+  params: {
+    id: string;
+  };
+}
 
+const DELETE = async (req: NextRequest, { params }: DeleteParams) => {
+  try {
+    const id = parseInt(params.id);
+
+    if (!id) {
+      return NextResponse.json({ error: "id not found" }, { status: 404 });
+    }
+
+    const category = await prisma.category.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ category });
+  } catch (error: any) {
+    console.log(error.message);
+    return NextResponse.json({ error: error.message });
+  }
+};
+
+export { GET, POST, PUT, DELETE };

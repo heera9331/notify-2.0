@@ -47,12 +47,18 @@ npx prisma generate
 - handle file system => done
 - add debug feature in settings => done
 - add pages => done
-
-  - home
-
-- implment category delete
+  - home => stats
+- use toast
+- implment category delete => done
+- update category
+-
 
 ## Issues
 
 - dynamic routing issue -> resolved
 -
+
+```json
+
+
+```

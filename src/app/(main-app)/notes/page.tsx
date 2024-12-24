@@ -5,6 +5,8 @@ import { axios } from "@/lib/axios";
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
 import { useNotes } from "@/hooks/use-notes";
+import EditorJsRenderer from "@/components/EditorJsRenderer";
+import { toast } from "sonner";
 
 interface Note {
   id: number;
@@ -21,6 +23,7 @@ const Page = () => {
     const fetchNotes = async () => {
       try {
         const response = await axios.get("/api/notes");
+        console.log(response.data);
         setNotes(response.data);
       } catch (error) {
         console.error("Failed to fetch notes:", error);
@@ -35,8 +38,10 @@ const Page = () => {
     try {
       await deleteNote(id);
       setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id)); // Update UI after deletion
+      toast.success("Note deleted");
     } catch (error) {
       console.error("Error deleting note:", error);
+      toast.error("Failed to deleted");
     }
   };
 
@@ -83,12 +88,13 @@ const Page = () => {
               <h2 className="font-bold text-lg">{note.title}</h2>
 
               {/* Note Content */}
-              <div className="text-sm text-gray-600 mb-4 overflow-hidden">
-                <div
+              <div className="text-sm text-gray-600 mb-4 overflow-hidden max-h-[180px]">
+                {/* <div
                   dangerouslySetInnerHTML={{
                     __html: note.content || "No content available",
                   }}
-                />
+                /> */}
+                <EditorJsRenderer data={note.content} />
               </div>
 
               {/* Actions */}

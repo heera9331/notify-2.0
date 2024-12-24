@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import "../globals.css";
 import { UserProvider, useUser } from "@/contexts/user-context";
 import Main from "@/components/main";
+import { Toaster } from "@/components/ui/sonner"
 
 export default function RootLayout({
   children,
@@ -21,6 +22,7 @@ export default function RootLayout({
             <Main className="flex-grow min-w-[calc(100% - var(--sidebar-width))] bg-gray-100">
               {children}
             </Main>
+            <Toaster />
           </div>
           {/* Footer */}
           <footer className="text-center text-gray-500 my-4">

@@ -49,7 +49,7 @@ const items = [
 ];
 
 const MainSidebar = () => {
-  const { categories } = useUser(); 
+  const { categories } = useUser();
 
   return (
     <SidebarProvider className="">
@@ -64,11 +64,11 @@ const MainSidebar = () => {
             </Link>
             <SidebarGroupAction>
               <Dialog>
-                <DialogTrigger className="">
+                <DialogTrigger className="add-new-category">
                   <Plus /> <span className="sr-only">Add Project</span>
                 </DialogTrigger>
                 <DialogContent>
-                  <FormCreateNoteType />
+                  <FormCreateNoteType title={"Category"} mode="view" />
                 </DialogContent>
               </Dialog>
             </SidebarGroupAction>
@@ -103,45 +103,6 @@ const MainSidebar = () => {
               </CollapsibleContent>
             </SidebarGroup>
           </Collapsible>
-
-          {/* Categories Collapsible */}
-          {/* <Suspense fallback={<Loader />}>
-            {categories.map((category: any) => (
-              <Collapsible key={category.id} className="group/collapsible p-0">
-                <SidebarGroup className="px-2 py-0">
-                  <CollapsibleTrigger className="bg-gray-200 rounded-md w-full flex items-center py-1 px-2">
-                    <span>{category.title}</span>
-                    <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180 w-5 h-5" />
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="mt-2">
-                    <SidebarMenu className="ml-4">
-                      <SidebarMenuItem>
-                        <SidebarMenuButton asChild>
-                          <a
-                            href="#"
-                            className="flex items-center gap-2 text-gray-700 hover:text-blue-500"
-                          >
-                            Item 1
-                          </a>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                      <SidebarMenuItem>
-                        <SidebarMenuButton asChild>
-                          <a
-                            href="#"
-                            className="flex items-center gap-2 text-gray-700 hover:text-blue-500"
-                          >
-                            Item 2
-                          </a>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    </SidebarMenu>
-                  </CollapsibleContent>
-                </SidebarGroup>
-              </Collapsible>
-            ))}
-          </Suspense> */}
-
           {/* dynamic */}
           <CategoryList categories={categories} />
         </SidebarContent>

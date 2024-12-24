@@ -17,6 +17,7 @@ import { Button } from "./ui/button";
 import { Loader2, Save } from "lucide-react";
 import axios from "axios";
 import { useUser } from "@/contexts/user-context";
+import { toast } from "sonner";
 
 import { Label } from "./ui/label";
 import {
@@ -125,10 +126,13 @@ const NoteEditor = ({ id, initialNote }: NoteProps) => {
       });
 
       console.log("Saved note:", response.data);
+      toast.success("Note saved");
     } catch (err) {
       console.error("Error saving note:", err);
+      toast.error("Failed to save note");
     } finally {
       setLoading(false);
+      toast.error("Failed to save note , try again later");
     }
   };
 
@@ -151,7 +155,7 @@ const NoteEditor = ({ id, initialNote }: NoteProps) => {
             type="text"
             value={note.title}
             onChange={handleTitleChange}
-            className="w-[80%] py-2 px-4 bg-gray-50 text-3xl font-bold active:focus:bg-white"
+            className="w-[80%] py-2 bg-gray-50 text-3xl font-bold active:focus:bg-white focus:outline-none"
             placeholder="Set note title"
           />
           <div className="w-[80%]">
