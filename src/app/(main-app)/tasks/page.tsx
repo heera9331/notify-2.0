@@ -6,12 +6,17 @@ import TaskList from "@/components/tasks/tasks-List";
 import { CreateTaskDialog } from "@/components/dashboard/create-task-dialog";
 import KanbanBoard from "@/components/tasks/kanban-board";
 import { Layout, LayoutDashboard } from "lucide-react";
+import Loader from "@/app/loader";
 
 const Page = () => {
   const [taskView, setTaskView] = useState<"list" | "kanban">("list"); // Define possible views
-  const { tasks = [] } = useTasks(); // Default to an empty array to avoid errors
+  const { tasks = [], loading } = useTasks(); // Default to an empty array to avoid errors
 
   useEffect(() => {}, [tasks]);
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <div className="min-h-screen p-6 bg-gray-100">
@@ -46,16 +51,19 @@ const Page = () => {
 
       {/* Main Content */}
       <main>
-        {tasks.length > 0 ? (
+        {loading && <Loader />}
+        {tasks?.length > 0 ? (
           taskView === "list" ? (
             <TaskList tasks={tasks} />
           ) : (
             <KanbanBoard />
           )
         ) : (
-          <p className="text-gray-600 text-center mt-10">
-            No tasks found. Create a new one!
-          </p>
+          !loading && (
+            <p className="text-gray-600 text-center mt-10">
+              No tasks found. Create a new one!
+            </p>
+          )
         )}
       </main>
     </div>

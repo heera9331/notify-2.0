@@ -7,6 +7,7 @@ import { Trash2 } from "lucide-react";
 import { useNotes } from "@/hooks/use-notes";
 import EditorJsRenderer from "@/components/EditorJsRenderer";
 import { toast } from "sonner";
+import Loader from "@/app/loader";
 
 interface Note {
   id: number;
@@ -17,16 +18,19 @@ interface Note {
 const Page = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const { deleteNote } = useNotes();
-
+  const [loading, setLoading] = useState(false);
   // Fetch notes
   useEffect(() => {
     const fetchNotes = async () => {
       try {
+        setLoading(true);
         const response = await axios.get("/api/notes");
         console.log(response.data);
         setNotes(response.data);
       } catch (error) {
         console.error("Failed to fetch notes:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -79,7 +83,7 @@ const Page = () => {
 
         {/* Notes Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {notes.map((note) => (
+          {!loading && notes.map((note) => (
             <div
               key={note.id}
               className="flex flex-col gap-4 w-full bg-white p-4 rounded shadow hover:shadow-lg transition-shadow"
@@ -112,6 +116,8 @@ const Page = () => {
               </div>
             </div>
           ))}
+
+          {loading && <Loader />}
         </div>
       </main>
     </div>

@@ -52,7 +52,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
     try {
       const response = await axios.get("/api/categories");
       const categories: Category[] = response.data;
-      console.log(categories);
       localStorage.setItem("categories", JSON.stringify(categories));
       setCategories(categories);
     } catch (error) {}

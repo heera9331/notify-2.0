@@ -73,8 +73,8 @@ export default function CategoriesPage() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch("/api/categories");
-        const data = await res.json();
+        const res = await axios.get("/api/categories");
+        const data = res.data;
         setCategories(data);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
@@ -103,8 +103,8 @@ export default function CategoriesPage() {
 
       // Update the hierarchy in the frontend
       const fetchCategories = async () => {
-        const res = await fetch("/api/categories");
-        const data = await res.json();
+        const res = await axios.get("/api/categories");
+        const data = res.data;
         setCategories(data);
       };
       fetchCategories();

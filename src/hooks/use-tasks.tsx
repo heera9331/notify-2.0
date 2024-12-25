@@ -81,6 +81,8 @@ interface Task {
 
 export function useTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchTasks();
@@ -88,24 +90,22 @@ export function useTasks() {
 
   const fetchTasks = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/tasks");
-      const data = await response.json();
+      setLoading(true);
+      const response = await axios.get("/api/tasks");
+      const data = response.data;
       setTasks(data);
     } catch (error) {
       console.error("Failed to fetch tasks:", error);
+      setError("Failed to load tasks");
+    } finally {
+      setLoading(false);
     }
   };
 
   const addTask = async ({ task }: { task: Omit<Task, "id"> }) => {
     try {
-      const response = await fetch("http://localhost:3000/api/tasks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(task),
-      });
-      const newTask = await response.json();
+      const response = await axios.post("/api/tasks", task);
+      const newTask = response.data.task;
       setTasks((prev) => [...prev, newTask]);
       return newTask;
     } catch (error) {
@@ -116,14 +116,8 @@ export function useTasks() {
 
   const updateTask = async (id: number, updates: Partial<Task>) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/tasks/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updates),
-      });
-      const updatedTask = await response.json();
+      const response = await axios.put(`/api/tasks/${id}`, updates);
+      const updatedTask = response.data.task;
       setTasks((prev) =>
         prev.map((task) =>
           task.id === id ? { ...task, ...updatedTask } : task
@@ -138,9 +132,7 @@ export function useTasks() {
 
   const deleteTask = async (id: number) => {
     try {
-      const response = await axios.delete(
-        `http://localhost:3000/api/tasks/${id}`
-      );
+      const response = await axios.delete(`/api/tasks/${id}`);
       const data = response.data;
       const newTasks = tasks.filter((task) => task.id !== id);
       setTasks(newTasks);
@@ -155,5 +147,7 @@ export function useTasks() {
     addTask,
     updateTask,
     deleteTask,
+    loading,
+    error,
   };
 }

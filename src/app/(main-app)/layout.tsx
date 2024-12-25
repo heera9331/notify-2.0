@@ -1,10 +1,11 @@
 "use client";
+
 import MainSidebar from "@/components/sidebar";
-import type { Metadata } from "next";
 import "../globals.css";
 import { UserProvider, useUser } from "@/contexts/user-context";
 import Main from "@/components/main";
-import { Toaster } from "@/components/ui/sonner"
+import { Toaster } from "@/components/ui/sonner";
+import { useEffect } from "react";
 
 export default function RootLayout({
   children,
@@ -17,7 +18,7 @@ export default function RootLayout({
         <UserProvider>
           <div className="flex overflow-hidden">
             {/* Sidebar  */}
-            {localStorage.getItem("user") && <MainSidebar />}
+            <MainSidebar />
             {/* Main Content */}
             <Main className="flex-grow min-w-[calc(100% - var(--sidebar-width))] bg-gray-100">
               {children}
@@ -33,3 +34,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+

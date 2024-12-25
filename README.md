@@ -1,6 +1,8 @@
 # Notify
 
-##
+## Server Actions
+
+
 
 ## Commands
 
@@ -48,17 +50,22 @@ npx prisma generate
 - add debug feature in settings => done
 - add pages => done
   - home => stats
-- use toast
+- use toast => done
 - implment category delete => done
-- update category
+- update category => done
+- create and update single task
+- add file supporrt
 -
 
 ## Issues
 
 - dynamic routing issue -> resolved
--
-
-```json
+- note update is => resolved
 
 
-```
+
+## NextJS
+
+- doesn't support all modules of nodejs
+- Many core Node.js modules, like fs, path, and crypto, are not available.
+- 

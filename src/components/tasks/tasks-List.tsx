@@ -24,7 +24,7 @@ const TaskList = ({ tasks = [] }: { tasks: Task[] }) => {
     <div className="min-h-screen ">
       <div className="container mx-auto">
         <h1 className="text-3xl font-bold mb-6">Tasks</h1>
-        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {tasks.map((task) => (
             <li
               key={task.id}

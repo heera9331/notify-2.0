@@ -1,41 +1,48 @@
+// notes/[id]/page.tsx
+
 "use client";
 
-import { useEffect, use, useState } from "react";
+import { useEffect, useState } from "react";
 import { Note } from "@prisma/client";
 import { axios } from "@/lib/axios";
 import NoteEditor from "@/components/note-editor";
-import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
-import { useSearchParams, useRouter, useParams } from "next/navigation";
-import { Card } from "@/components/ui/card";
-import { useNotes } from "@/hooks/use-notes";
+import { useSearchParams, useParams } from "next/navigation";
+import { toast } from "sonner";
 
 const Page = () => {
-  const { id } = useParams;
+  const { id } = useParams();
   const [note, setNote] = useState<Note | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const searchParams = useSearchParams();
-  const action = searchParams?.get("action") || "view"; // Get the action from the query
-
-  const { getNote } = useNotes();
+  const [loading, setLoading] = useState(true); // Track loading state
 
   useEffect(() => {
-    if (id) {
-      const note = getNote(Number(id));
-      console.log(note);
-      setNote(note);
-    } else {
-    }
-  }, [id, getNote, action]);
+    const fetchNote = async () => {
+      try {
+        const response = await axios.get(`/api/notes/${id}`);
+        setNote(response.data);
+      } catch (error) {
+        toast.error("Failed to fetch note");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNote();
+  }, [id]);
 
   if (loading) return <div className="p-4">Loading...</div>;
-  if (error) return <div className="p-4 text-red-500">{error}</div>;
+  if (!note) return <div className="p-4 text-red-500">Note not found.</div>;
 
   return (
     <div className="min-h-screen p-6 bg-gray-100">
       <div className="min-h-screen">
-        <NoteEditor initialNote={note} id={Number(id)} />
+        <NoteEditor
+          initialNote={{
+            id: note.id,
+            title: note.title,
+            content: note.content,
+            userId: note.userId,
+          }}
+        />
       </div>
     </div>
   );

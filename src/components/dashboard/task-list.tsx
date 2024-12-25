@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Task } from "@prisma/client";
 import { Link } from "lucide-react";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
+
 export function TaskList({ tasks }: { tasks: Task[] }) {
   return (
     <Card className="p-6">

@@ -28,13 +28,7 @@ export function useNotes() {
   };
 
   const getNote = (id: number) => {
-    for (let i = 0; i < notes.length; i++) {
-      if (notes[i].id === id) {
-        return notes[i];
-      }
-    }
-
-    return null;
+    return notes.find((note) => note.id === id) || null;
   };
 
   const updateNote = (newNote: Note) => {

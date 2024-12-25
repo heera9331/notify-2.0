@@ -19,7 +19,7 @@ const EditorJsRenderer = ({ data }: { data: string }) => {
 
   return (
     <div>
-      {jsonData.blocks.map((block: any, index: number) => {
+      {jsonData && jsonData.blocks?.map((block: any, index: number) => {
         switch (block.type) {
           case "header":
             const HeaderTag = `h${block.data.level}`;

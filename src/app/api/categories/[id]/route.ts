@@ -9,19 +9,21 @@ interface GetParams {
 }
 
 interface GetProps {
-  id: string;
+  params: { id: string };
 }
 
 // GET endpoint to fetch children of a category
-const GET = async (req: NextRequest, params: GetProps) => {
+const GET = async (req: NextRequest, { params }: GetProps) => {
   try {
-    const id = parseInt(params.id);
+    const id = parseInt((await params).id);
+
     if (isNaN(id)) {
-      return NextResponse.json({ error: "Invalid parentId" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     }
 
     const category = await prisma.category.findUnique({
       where: { id },
+      include: { children: true },
     });
 
     return NextResponse.json({ category });

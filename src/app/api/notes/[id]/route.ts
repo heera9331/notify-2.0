@@ -4,8 +4,9 @@ import prisma from "@/lib/prisma";
 // Correctly typed handler for API route
 export async function GET(
   req: NextRequest,
-  { params }: { params: Record<string, string> }
+  props: { params: Promise<Record<string, string>> }
 ) {
+  const params = await props.params;
   try {
     const { id } = params;
     const intId = parseInt(id, 10); // Convert ID to an integer
@@ -43,8 +44,9 @@ export async function GET(
 
 export const DELETE = async (
   req: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) => {
+  const params = await props.params;
   const { id } = params;
 
   try {
@@ -57,6 +59,47 @@ export const DELETE = async (
     console.error("DELETE Error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+};
+
+interface Params {
+  params: Promise<{ id: string }>;
+}
+
+export const PUT = async (req: NextRequest, { params }: Params) => {
+  try {
+    const id = parseInt((await params).id);
+
+    if (isNaN(id)) {
+      return NextResponse.json(
+        { error: "Invalid note ID provided." },
+        { status: 400 }
+      );
+    }
+    const { title, content, category } = await req.json();
+    const updatedNote = await prisma.note.update({
+      where: { id },
+      data: {
+        title,
+        content: JSON.stringify(content),
+        category,
+      },
+    });
+
+    if (updatedNote) {
+      return NextResponse.json({ note: updatedNote, message: "Note updated" });
+    }
+
+    return NextResponse.json(
+      { error: "Error while updating note" },
+      { status: 500 }
+    );
+  } catch (error) {
+    console.log("Note update error> ", error);
+    return NextResponse.json(
+      { error: "Error while updating note" },
       { status: 500 }
     );
   }

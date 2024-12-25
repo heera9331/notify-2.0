@@ -1,54 +1,59 @@
-import multer from "multer";
 import fs from "fs";
-import path from "path";
-
-// Define the upload directory root
-const UPLOADS_ROOT = path.join(process.cwd(), "uploads");
 
 /**
  * Ensures a directory exists, and creates it if it doesn't.
- * @param dirPath The path of the directory to ensure
+ * @param {string} dirPath - The path of the directory to ensure.
  */
-const ensureDirectory = (dirPath: string) => {
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true });
+const ensureDirectory = async (dirPath) => {
+  try {
+    await fs.promises.mkdir(dirPath, { recursive: true });
+  } catch (err) {
+    console.error("Error ensuring directory:", err);
   }
 };
 
 /**
- * Generates the folder hierarchy (year/month) like WordPress.
- * Ensures the folders exist and returns the path.
- * @returns The generated folder path.
+ * Generates a folder path for uploads based on the year and month.
+ * This works without using the 'path' module.
+ * @returns {string} The generated folder path.
  */
-const getUploadFolderPath = (): string => {
+const getUploadFolderPath = async () => {
   const currentDate = new Date();
   const year = currentDate.getFullYear().toString();
-  const month = (currentDate.getMonth() + 1).toString(); // Month starts from 0
+  const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
 
-  const folderPath = path.join(UPLOADS_ROOT, year, month);
-  ensureDirectory(folderPath);
+  const folderPath = `uploads/${year}/${month}`;
+  await ensureDirectory(folderPath);
 
   return folderPath;
 };
 
 /**
- * Multer Storage Configuration
- * Dynamically sets the upload destination based on year/month.
+ * Saves a file buffer to the specified folder.
+ * Compatible with environments that do not support the 'path' module.
+ * @param {Buffer} fileData - The file data as a Buffer.
+ * @param {string} originalFileName - The original name of the uploaded file.
+ * @returns {string} The relative path where the file was saved.
  */
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const folderPath = getUploadFolderPath();
-    cb(null, folderPath);
-  },
-  filename: (req, file, cb) => {
-    const timestamp = Date.now();
-    const ext = path.extname(file.originalname);
-    const baseName = path.basename(file.originalname, ext).replace(/\s+/g, "-");
-    cb(null, `${baseName}-${timestamp}${ext}`);
-  },
-});
+const uploadFile = async (fileData, originalFileName) => {
+  const folderPath = await getUploadFolderPath();
+  const timestamp = Date.now();
+  const ext = originalFileName.split(".").pop();
+  const baseName = originalFileName
+    .split(".")
+    .slice(0, -1)
+    .join(".")
+    .replace(/\s+/g, "-");
+  const finalFileName = `${baseName}-${timestamp}.${ext}`;
+  const filePath = `${folderPath}/${finalFileName}`;
 
-// Initialize Multer
-const upload = multer({ storage });
+  try {
+    await fs.promises.writeFile(filePath, fileData);
+    return filePath;
+  } catch (err) {
+    console.error("Error saving file:", err);
+    throw new Error("Failed to save file");
+  }
+};
 
-export { upload };
+export { uploadFile };

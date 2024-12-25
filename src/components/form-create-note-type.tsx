@@ -17,7 +17,7 @@ import { toast } from "sonner";
 
 interface FormProp {
   title: string;
-  mode: "new" | "update"; // Modes: new or update
+  mode: string; // Modes: new or update
   existingData?: { id: number; title: string; parentId: number | null }; // Existing data for update
 }
 

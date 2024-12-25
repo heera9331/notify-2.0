@@ -2,13 +2,11 @@ import { axios } from "@/lib/axios";
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-const GET = async (req: NextRequest) => {
+export const GET = async (req: NextRequest) => {
   try {
     // Fetch categories with their subcategories (children)
     const categories = await prisma.category.findMany({
-      where: {
-        parentId: null, // Fetch only top-level categories
-      },
+      
       include: {
         children: true, // Include subcategories recursively
       },
@@ -24,7 +22,7 @@ const GET = async (req: NextRequest) => {
   }
 };
 
-const POST = async (req: NextRequest) => {
+export const POST = async (req: NextRequest) => {
   try {
     const { title, description, parentId } = await req.json();
 
@@ -54,5 +52,3 @@ const POST = async (req: NextRequest) => {
     );
   }
 };
-
-export { GET, POST };

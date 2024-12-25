@@ -1,3 +1,5 @@
+// NoteEditor.tsx
+
 "use client";
 import { useEffect, useRef, useState } from "react";
 import EditorJS from "@editorjs/editorjs";
@@ -28,14 +30,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { title } from "process";
 import { Input } from "./ui/input";
 
 const EDITOR_HOLDER_ID = "editorjs-container";
 
 interface NoteProps {
-  id: number;
-  initialNote?: {
+  initialNote: {
     id: number;
     title: string;
     content: string;
@@ -43,36 +43,38 @@ interface NoteProps {
   };
 }
 
-const NoteEditor = ({ id, initialNote }: NoteProps) => {
+const NoteEditor = ({ initialNote }: NoteProps) => {
   const editorInstance = useRef<EditorJS | null>(null);
   const { user, categories } = useUser();
   const [category, setCategory] = useState<number | null>(null);
 
-  const [note, setNote] = useState(
-    initialNote || { id: 0, title: "Post title", content: "{}", userId: 4 }
-  );
+  const [note, setNote] = useState(initialNote);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (initialNote) {
-      setNote(initialNote);
-    }
-  }, [initialNote]);
-
+  // Initialize EditorJS once when component mounts
   useEffect(() => {
     initializeEditor();
 
     return () => {
       if (editorInstance.current) {
-        // editorInstance.current.destroy(); // Destroy instance to avoid memory leaks
+        // editorInstance.current.destroy();
         editorInstance.current = null;
       }
     };
-  }, []); // Reinitialize the editor if note.content changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const initializeEditor = () => {
     if (editorInstance.current) {
-      editorInstance.current.destroy(); // Destroy the previous instance
+      editorInstance.current.destroy();
+    }
+
+    let parsedData;
+    try {
+      parsedData = note.content ? JSON.parse(note.content) : { blocks: [] };
+    } catch (error) {
+      console.error("Failed to parse note content:", error);
+      parsedData = { blocks: [] };
     }
 
     const editor = new EditorJS({
@@ -91,13 +93,17 @@ const NoteEditor = ({ id, initialNote }: NoteProps) => {
         embed: Embed,
       },
       placeholder: "Press '/' for commands...",
-      data: note.content ? JSON.parse(note.content) : undefined,
+      data: parsedData,
       onChange: async () => {
-        const savedData = await editor.save();
-        setNote((prev) => ({
-          ...prev,
-          content: JSON.stringify(savedData),
-        }));
+        try {
+          const savedData = await editor.save();
+          setNote((prev) => ({
+            ...prev,
+            content: JSON.stringify(savedData),
+          }));
+        } catch (error) {
+          console.error("Failed to save editor content:", error);
+        }
       },
     });
 
@@ -111,28 +117,27 @@ const NoteEditor = ({ id, initialNote }: NoteProps) => {
   const saveNote = async () => {
     setLoading(true);
     try {
-      const data = JSON.parse(note.content ?? "{}");
+      const content = JSON.parse(note.content ?? "{}");
       const payload = {
         title: note.title,
-        content: data,
+        content: content,
         userId: user?.id ?? 0,
         category,
       };
-
+      console.log("Saving Payload:", payload);
       const response = await axios({
         method: note.id ? "put" : "post",
         url: note.id ? `/api/notes/${note.id}` : "/api/notes",
         data: payload,
       });
-
-      console.log("Saved note:", response.data);
+      console.log("Save Response:", response);
       toast.success("Note saved");
     } catch (err) {
       console.error("Error saving note:", err);
       toast.error("Failed to save note");
     } finally {
       setLoading(false);
-      toast.error("Failed to save note , try again later");
+      // Removed the erroneous toast.error call here
     }
   };
 
@@ -166,8 +171,9 @@ const NoteEditor = ({ id, initialNote }: NoteProps) => {
           </div>
         </Card>
 
+        {/* Right Sidebar */}
         <div className="w-1/4 flex flex-col gap-4">
-          <Card className=" bg-white">
+          <Card className="bg-white">
             <div className="flex flex-col gap-2 min-h-[124px]">
               <Label className="font-semibold text-xl">Featured Image</Label>
               <Input type="file" name="featured_image" />
@@ -175,7 +181,7 @@ const NoteEditor = ({ id, initialNote }: NoteProps) => {
             </div>
           </Card>
 
-          <Card className=" bg-white">
+          <Card className="bg-white">
             <div className="flex flex-col gap-2">
               <Label className="font-semibold text-xl">
                 Select Note Category
@@ -202,7 +208,7 @@ const NoteEditor = ({ id, initialNote }: NoteProps) => {
             </div>
           </Card>
 
-          <Card className=" bg-white">
+          <Card className="bg-white">
             <div className="flex flex-col gap-2">
               <Label className="font-semibold text-xl">Publish</Label>
               <Button className="bg-gray-800 text-white">Publish</Button>

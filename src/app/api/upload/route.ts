@@ -1,24 +1,25 @@
-import { upload } from "@/lib/file-system.ts";
-import { NextRequest } from "next/server";
+import { uploadFile } from "@/lib/file-system";
+import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
-  return new Promise((resolve) => {
-    upload.single("file")(req, {}, (err) => {
-      if (err) {
-        console.error("Error uploading file:", err);
-        return resolve(
-          Response.json({ message: "File upload failed" }, { status: 500 })
-        );
-      }
+  try {
+    const formData = await req.formData();
+    const file = formData.get("file");
 
-      const { filename, path } = req.file;
-      return resolve(
-        Response.json({
-          message: "File uploaded successfully",
-          fileName: filename,
-          filePath: path,
-        })
-      );
+    if (!file || !(file instanceof File)) {
+      throw new Error("File is required and must be a valid instance.");
+    }
+
+    const savedPath = await uploadFile(file, file.name);
+    return NextResponse.json({
+      message: "File uploaded successfully",
+      path: savedPath,
     });
-  });
+  } catch (error) {
+    console.error("Error:", error);
+    return NextResponse.json(
+      { error: error.message || "Internal server error" },
+      { status: 500 }
+    );
+  }
 };

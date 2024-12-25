@@ -2,10 +2,8 @@ import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 // GET: Fetch a single task by ID
-const GET = async (
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) => {
+const GET = async (req: NextRequest, props: { params: Promise<{ id: string }> }) => {
+  const params = await props.params;
   const { id } = params;
 
   try {
